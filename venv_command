@@ -1,0 +1,5 @@
+python -m venv python_env_voice_assistant
+python_env_voice_assistant\Scripts\Activate
+pip install -r requirements.txt # MAJ seulement les nouvelles dépendances
+
+pip freeze > requirements.txt # Pour faire une MAJ sur le requirements.txt depuis ton environnement

@@ -1,0 +1,8 @@
+# Environnements virtuels
+python_env_voice_assistant/
+
+# Python
+__pycache__/
+
+# Variables d'environnement
+.env
