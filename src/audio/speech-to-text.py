@@ -2,9 +2,6 @@ import whisper
 import sounddevice as sd
 import numpy as np
 import soundfile as sf
-import io
-import os
-from pydub import AudioSegment
 
 def record_audio(duration=5, samplerate=16000, filename="enregistrement.mp3"):
     print("🎙️ Enregistrement...")
