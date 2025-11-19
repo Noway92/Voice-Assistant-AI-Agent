@@ -1,3 +1,20 @@
 # Voice-Assistant-AI-Agent
 
 ![Diagramme](/public/Architecture.png)
+
+# IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
+
+
+Idées : 
+Offline/online
+- Créer une fonction qui définit le LLM que l'on utilise dans chaque agent (par exemple return le offline ou online et choisir)?
+- Choisir quand utiliser online ou offline (si question simple offline sinon online)
+
+Agents : 
+- Quand on fait les prompts des agents on peut mettre des conditions sur le retour des tools : par exemple si le tool retourne "fin" ou "reservation réussit" on peut demander d'arreter d'utiliser l'agent
+- Agent Instructor (on eput emttre du early stopping, ...)
+
+Workflow : 
+- Faut il vérifié quand on renvoie au LLM final si on a bien répondu à la question ou pas ?
+- Utiliser google maps pour récup position
+- rajouter un agent pour traduire la question vers l'anglais 

@@ -1,7 +1,5 @@
 # agents/general_inqueries_agent.py
 from langchain_ollama import OllamaLLM
-import psycopg2
-from psycopg2.extras import RealDictCursor
 
 class GeneralInqueriesAgent:
     def __init__(self, model_name="llama3", db_config=None):

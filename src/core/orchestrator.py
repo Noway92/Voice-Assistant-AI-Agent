@@ -36,18 +36,19 @@ class Orchestrator:
         Classify user intent using the LLM.
         Returns: 'general', 'order', 'reservation', or 'menu'
         """
-        prompt = f"""Tu es un classificateur pour un restaurant. Analyse la demande du client et détermine la catégorie.
+        prompt = f"""You are a classifier for a restaurant. Analyze the customer's request and determine the category.
 
-            Catégories disponibles :
-            - general : Questions générales (horaires, localisation, contact, offres spéciales)
-            - order : Commandes de plats (commander, modifier une commande, annuler, statut de commande)
-            - reservation : Réservations de table (réserver, modifier, annuler, disponibilité)
-            - menu : Questions précises sur le menu (ingrédients, allergènes, prix, promotions sur les plats)
+            Available categories:
+            - general: General questions (opening hours, location, contact, special offers)
+            - order: Food orders (placing an order, modifying an order, canceling, order status)
+            - reservation: Table reservations (book, modify, cancel, availability)
+            - menu: Specific questions about the menu (ingredients, allergens, prices, dish promotions)
 
-            Demande du client : {user_input}
+            Customer request: {user_input}
 
-            Réponds UNIQUEMENT par un seul mot parmi : general, order, reservation, menu"""
-        
+            Respond ONLY with a single word from: reservation"""
+
+            #Respond ONLY with a single word from: reservation : general, order, reservation, menu
         try:
             response = self.llm.invoke(prompt).strip().lower()
             
@@ -93,7 +94,7 @@ class Orchestrator:
             elif intent == "menu":
                 response = self.menu_agent.process(user_input)
             else:
-                response = "Je suis désolé, je n'ai pas compris votre demande."
+                response = "I am sorry, I didn't understand your question"
             
             return response
             
@@ -120,10 +121,7 @@ if __name__ == "__main__":
     orchestrator_instance = Orchestrator()
     
     test_queries = [
-        "Quels sont vos horaires d'ouverture ?",
-        "Je voudrais commander une pizza margherita",
-        "Puis-je réserver une table pour 4 personnes demain soir à 19h ?",
-        "Quels sont les ingrédients de la pizza 4 fromages ?"
+        "Can I book a table for 4 people tomorrow evening at 7 PM?",
     ]
     
     print("Testing Orchestrator with Sub-Agents\n" + "="*50)

@@ -5,7 +5,7 @@ import os
 def llm_offline(input_text) :
     print("Offline: ")
     # Fontionnelle mais très long
-    llm = OllamaLLM(model="llama3")
+    llm = OllamaLLM(model="mistral")
 
     # Faire une requête simple
     response = llm.invoke(input_text)
