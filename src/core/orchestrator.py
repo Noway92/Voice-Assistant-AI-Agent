@@ -136,6 +136,7 @@ if __name__ == "__main__":
     
     test_queries = [
         "Can I book a table for 4 people tomorrow evening at 7 PM? My name is Noé and my Phone is +33769624396",
+        #"Can you cancel my reservation for the 2025-11-22 at 7 PM, my name is Noé",
     ]
     
     print("Testing Orchestrator with Sub-Agents\n" + "="*50)
