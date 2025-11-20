@@ -4,6 +4,7 @@ Simple routing approach - cleaner and more maintainable
 """
 
 from langchain_ollama import OllamaLLM
+from langchain.chat_models import ChatOpenAI
 import sys
 import os
 
@@ -22,14 +23,21 @@ class Orchestrator:
     No complex ReAct pattern - just smart routing.
     """
     
-    def __init__(self, model_name="llama3"):
-        self.llm = OllamaLLM(model=model_name, temperature=0)
+    def __init__(self,isOffline=True):
+        if isOffline:
+            self.llm = OllamaLLM(model="llama3", temperature=0)
+        else:
+            api_key = os.getenv("API_KEY_OPENAI")  # Lire la clé depuis les variables d'environnement
+            if not api_key:
+                raise ValueError("API_KEY_OPENAI not found in environment variables")
+            self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=api_key)
+
         
         # Initialize all sub-agents
-        self.general_agent = GeneralInqueriesAgent()
-        self.order_agent = OrderHandlingAgent()
-        self.reservation_agent = TableReservationAgent()
-        self.menu_agent = MenuInformationAgent()
+        self.general_agent = GeneralInqueriesAgent(False)
+        self.order_agent = OrderHandlingAgent(False)
+        self.reservation_agent = TableReservationAgent(False)
+        self.menu_agent = MenuInformationAgent(False)
         
     def _classify_intent(self, user_input: str) -> str:
         """
@@ -50,7 +58,13 @@ class Orchestrator:
 
             #Respond ONLY with a single word from: reservation : general, order, reservation, menu
         try:
-            response = self.llm.invoke(prompt).strip().lower()
+            llm_response = self.llm.invoke(prompt)
+            
+            # Handle different response types (AIMessage (Online) vs string (Offline))
+            if hasattr(llm_response, 'content'):
+                response = llm_response.content.strip().lower()
+            else:
+                response = str(llm_response).strip().lower()
             
             # Extract the category from the response
             if "general" in response:
@@ -112,16 +126,16 @@ def orchestrator(user_input: str) -> str:
     Returns:
         The response from the appropriate sub-agent
     """
-    orch = Orchestrator()
+    orch = Orchestrator(False)
     return orch.process_request(user_input)
 
 
 if __name__ == "__main__":
     # Test the orchestrator
-    orchestrator_instance = Orchestrator()
+    orchestrator_instance = Orchestrator(False)
     
     test_queries = [
-        "Can I book a table for 4 people tomorrow evening at 7 PM?",
+        "Can I book a table for 4 people tomorrow evening at 7 PM? My name is Noé and my Phone is +33769624396",
     ]
     
     print("Testing Orchestrator with Sub-Agents\n" + "="*50)
