@@ -18,7 +18,7 @@ Workflow :
 - Faut il vérifié quand on renvoie au LLM final si on a bien répondu à la question ou pas ?
 - Utiliser google maps pour récup position
 
-# Reste à Faire : 
+## Reste à Faire : 
 
 BDD : 
 - Choisir les Bases a utilisées.
