@@ -1,5 +1,7 @@
 import sys
+import time
 from pathlib import Path
+from typing import List, Dict
 
 # Ajouter le dossier src au path
 sys.path.append(str(Path(__file__).parent / "src"))
@@ -17,6 +19,9 @@ class VoiceAssistant:
         self.tts = TextToSpeech(isOffline=isOffline)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
+
+        #Historique des conversations
+        self.conversation_history: List[Dict[str, str]] = []
         print("[Voice Assistant] Initialized successfully!")
     
     def listen(self) -> str:
@@ -31,11 +36,30 @@ class VoiceAssistant:
         # 1. Detect language and translate to English
         english_input, original_lang = self.language_processor.process_input(user_input)
         print(f"[Language] Detected: {original_lang} | Translated: {english_input}")
+
+        # Check for exit commands
+        exit_words = ['exit', 'quit', 'stop', 'bye']
+        if any(word in english_input.lower() for word in exit_words):
+            self.speak("Goodbye! Au revoir!")
+            return False
         
-        # 2. Process through orchestrator (intent classification + agent routing)
-        english_response = self.orchestrator.process_request(english_input)
+        # 2. Process through orchestrator (intent classification + agent routing + conversation history)
+        english_response = self.orchestrator.process_request(
+            english_input,
+            conversation_history=self.conversation_history
+        )
+
+        # 3. Add to conversation history
+        self.conversation_history.append({
+            "role": "user",
+            "content": english_input
+        })
+        self.conversation_history.append({
+            "role": "assistant",
+            "content": english_response
+        })
         
-        # 3. Translate response back to original language
+        # 4. Translate response back to original language
         final_response = self.language_processor.process_output(english_response, original_lang)
         print(f"[Assistant] {final_response}")
         
@@ -62,20 +86,18 @@ class VoiceAssistant:
                 if not user_input:
                     print("[Error] Could not understand audio")
                     continue
-                
-                # Check for exit commands
-                if user_input.lower() in ['exit', 'quit', 'stop', 'sortir', 'arrêter']:
-                    self.speak("Goodbye! Au revoir!")
-                    break
-                
+
                 # Step 2-3-4: Process (translate -> orchestrate -> translate back)
                 response = self.process(user_input)
+
+                # Exit si il a demandé de partir
+                if not response : break
                 
                 # Step 5: Speak the response
                 self.speak(response)
                 
                 print("\n" + "-"*60 + "\n")
-                stop = 1
+                #stop = 1
                 
             except KeyboardInterrupt:
                 print("\n[Interrupted] Shutting down...")
@@ -89,10 +111,9 @@ class VoiceAssistant:
 
 def main():
     """Main entry point."""
-    # Set to False to use OpenAI instead of local Ollama
-    USE_OFFLINE = False
+    isOffline = False
     
-    assistant = VoiceAssistant(isOffline=USE_OFFLINE)
+    assistant = VoiceAssistant(isOffline=isOffline)
     assistant.run()
 
 if __name__ == "__main__":
