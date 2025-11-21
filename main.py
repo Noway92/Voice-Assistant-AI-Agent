@@ -14,7 +14,7 @@ class VoiceAssistant:
     def __init__(self, isOffline=True):
         """Initialize the voice assistant with all components."""
         self.stt = SpeechToText()
-        self.tts = TextToSpeech(use_online=isOffline)
+        self.tts = TextToSpeech(isOffline=isOffline)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
         print("[Voice Assistant] Initialized successfully!")
@@ -53,7 +53,8 @@ class VoiceAssistant:
         print("Say 'exit' or 'quit' to stop")
         print("="*60 + "\n")
         
-        while True:
+        stop = 0
+        while True and stop==0:
             try:
                 # Step 1: Listen to user
                 user_input = self.listen()
@@ -74,19 +75,22 @@ class VoiceAssistant:
                 self.speak(response)
                 
                 print("\n" + "-"*60 + "\n")
+                stop = 1
                 
             except KeyboardInterrupt:
                 print("\n[Interrupted] Shutting down...")
                 self.speak("Goodbye!")
+                stop = 1
                 break
             except Exception as e:
                 print(f"[Error] {str(e)}")
                 self.speak("Sorry, I encountered an error. Please try again.")
+                stop = 1
 
 def main():
     """Main entry point."""
     # Set to False to use OpenAI instead of local Ollama
-    USE_OFFLINE = True
+    USE_OFFLINE = False
     
     assistant = VoiceAssistant(isOffline=USE_OFFLINE)
     assistant.run()

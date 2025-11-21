@@ -3,13 +3,13 @@ import os
 from openai import OpenAI
 
 class TextToSpeech:
-    def __init__(self, use_offline=True, rate=170, voice="echo"):
+    def __init__(self, isOffline=True, rate=170, voice="echo"):
         """Initialize the Text-to-Speech engine."""
-        self.use_online = use_offline
+        self.use_online = isOffline
         self.rate = rate
         self.voice = voice
         
-        if use_offline:
+        if isOffline:
             self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))
         else:
             self.engine = pyttsx3.init()
