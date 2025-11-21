@@ -7,6 +7,7 @@ from langchain_ollama import OllamaLLM
 from langchain.chat_models import ChatOpenAI
 import sys
 import os
+from typing import List, Dict, Optional
 
 # Add parent directory to path to import agents
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -34,10 +35,10 @@ class Orchestrator:
 
         
         # Initialize all sub-agents
-        self.general_agent = GeneralInqueriesAgent(False)
-        self.order_agent = OrderHandlingAgent(False)
-        self.reservation_agent = TableReservationAgent(False)
-        self.menu_agent = MenuInformationAgent(False)
+        self.general_agent = GeneralInqueriesAgent(isOffline)
+        self.order_agent = OrderHandlingAgent(isOffline)
+        self.reservation_agent = TableReservationAgent(isOffline)
+        self.menu_agent = MenuInformationAgent(isOffline)
         
     def _classify_intent(self, user_input: str) -> str:
         """
@@ -82,22 +83,55 @@ class Orchestrator:
             print(f"Classification error: {e}")
             return "general"  # Default fallback
     
-    def process_request(self, user_input: str) -> str:
+    def _build_context(self, current_input: str, history: List[Dict]) -> str:
+        """
+        Build enriched context by combining conversation history with current input.
+        
+        Args:
+            current_input: The current user's question or request
+            history: List of previous conversation messages with 'role' and 'content' keys
+            
+        Returns:
+            A formatted string containing recent conversation context and current request.
+            If no history exists, returns the current input unchanged.
+        """
+        if not history or len(history) == 0:
+            return current_input
+        
+        # Take last 3 exchanges (6 messages) for context
+        recent_history = history[-6:] if len(history) > 6 else history
+        
+        context_parts = ["Previous conversation context:"]
+        for msg in recent_history:
+            role = "Customer" if msg["role"] == "user" else "Assistant"
+            context_parts.append(f"{role}: {msg['content']}")
+        
+        context_parts.append(f"\nCurrent customer request: {current_input}")
+        
+        return "\n".join(context_parts)
+    
+    def process_request(self, user_input: str, conversation_history: Optional[List[Dict]] = []) -> str:
         """
         Process user request by routing to the appropriate sub-agent.
         
         Args:
             user_input: The user's question or request
+            conversation_history: Optional conversation history for context 
             
         Returns:
             The response from the appropriate sub-agent
         """
         try:
-            # Step 1: Classify the intent
+            # Step 1: Build context with history
+            if len(conversation_history) == 0:
+                user_input = self._build_context(user_input, conversation_history)
+                print(f"[Orchestrator] Use context for answering")
+
+            # Step 2: Classify the intent (using context if available)
             intent = self._classify_intent(user_input)
             print(f"[Orchestrator] Classified intent: {intent}")
             
-            # Step 2: Route to the appropriate sub-agent
+            # Step 3: Route to the appropriate sub-agent with context
             if intent == "general":
                 response = self.general_agent.process(user_input)
             elif intent == "order":

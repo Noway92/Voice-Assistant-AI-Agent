@@ -18,6 +18,9 @@ Workflow :
 - Faut il vérifié quand on renvoie au LLM final si on a bien répondu à la question ou pas ?
 - Utiliser google maps pour récup position
 
+Audio : 
+- Si le son n'est pas lu par le speak_offline : utiliser gTTS (dans tous les cas on attend la version de vianney)
+
 ## Reste à Faire : 
 
 BDD : 
