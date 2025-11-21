@@ -46,6 +46,7 @@ class Orchestrator:
         """
         prompt = f"""You are a classifier for a restaurant. Analyze the customer's request and determine the category.
 
+
             Available categories:
             - general: General questions (opening hours, location, contact, special offers)
             - order: Food orders (placing an order, modifying an order, canceling, order status)
@@ -54,9 +55,7 @@ class Orchestrator:
 
             Customer request: {user_input}
 
-            Respond ONLY with a single word from: reservation"""
-
-            #Respond ONLY with a single word from: reservation : general, order, reservation, menu
+            Respond ONLY with a single word from: general, order, reservation, menu"""
         try:
             llm_response = self.llm.invoke(prompt)
             
@@ -135,8 +134,9 @@ if __name__ == "__main__":
     orchestrator_instance = Orchestrator(False)
     
     test_queries = [
-        "Can I book a table for 4 people tomorrow evening at 7 PM? My name is Noé and my Phone is +33769624396",
+        "Can I book a table for 2 people tomorrow evening at 7 PM? My name is Noé and my Phone is +33769624396",
         #"Can you cancel my reservation for the 2025-11-22 at 7 PM, my name is Noé",
+        #"Can you tell me if you got places for 2025-11-22 ",
     ]
     
     print("Testing Orchestrator with Sub-Agents\n" + "="*50)

@@ -3,37 +3,33 @@ import sounddevice as sd
 import numpy as np
 import soundfile as sf
 
-def record_audio(duration=5, samplerate=16000, filename="enregistrement.mp3"):
-    print("🎙️ Enregistrement...")
-    # Enregistrement de l'audio
-    audio = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1)
-    sd.wait()
+class SpeechToText:
+    def __init__(self, model_name="base", duration=5, samplerate=16000):
+        """Initialize the Speech-to-Text engine."""
+        self.model = whisper.load_model(model_name)
+        self.duration = duration
+        self.samplerate = samplerate
     
-    # Conversion en format approprié pour l'export MP3
-    audio_int16 = (audio.flatten() * 32767).astype(np.int16)
+    def record_audio(self, filename="enregistrement.mp3"):
+        """Record audio from microphone."""
+        print("🎙️ Enregistrement...")
+        audio = sd.rec(int(self.duration * self.samplerate), 
+                      samplerate=self.samplerate, channels=1)
+        sd.wait()
+        
+        audio_int16 = (audio.flatten() * 32767).astype(np.int16)
+        sf.write(filename, audio_int16, self.samplerate, format='mp3')
+        print(f"✅ Audio sauvegardé sous : {filename}")
+        
+        return filename
     
-    # Sauvegarde en MP3
-    sf.write(filename, audio_int16, samplerate, format='mp3')
-    print(f"✅ Audio sauvegardé sous : {filename}")
+    def transcribe(self, audio_file):
+        """Transcribe audio file to text."""
+        result = self.model.transcribe(audio_file)
+        return result['text']
     
-    return filename
-
-def stt_whisper(mp3_filename):
-    # Charger le modèle Whisper
-    model = whisper.load_model("base")
-    
-    # Transcrire directement le fichier MP3
-    result = model.transcribe(mp3_filename)
-    return result['text']
-
-
-
-# Enregistrement audio et sauvegarde en MP3
-#mp3_file = record_audio(4)
-mp3_file="output_tts_online.mp3"
-
-# Transcription de l'audio MP3
-text = stt_whisper(mp3_file)
-print("Texte reconnu :", text)
-    
-    
+    def listen(self):
+        """Record audio and return transcribed text."""
+        audio_file = self.record_audio()
+        text = self.transcribe(audio_file)
+        return text
