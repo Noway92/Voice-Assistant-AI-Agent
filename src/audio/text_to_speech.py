@@ -10,23 +10,24 @@ class TextToSpeech:
         self.rate = rate
         self.voice = voice
         
+        # ON UTILISE QUE OFFLINE POUR L'INSTANT CAR ONLINE MAUVAIS
+        # MAIS ON INITIALISE A CHAQUE FOIS CAR pyttsx3 bug
         """if isOffline:
             self.engine = pyttsx3.init()
             self.engine.setProperty("rate", 170)
         else:
             self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))"""
         # ON UTILISE QUE OFFLINE POUR L'INSTANT CAR ONLINE MAUVAIS
-        self.engine = pyttsx3.init()
-        self.engine.setProperty("rate", 170)
     
     
     def speak_offline(self, text):
         """Use pyttsx3 for offline TTS."""
         print(f"[TTS Offline] Speaking: {text}")
-        self.engine.say(text)
-        self.engine.runAndWait()
-
-        time.sleep(1) # Pour que speak offline lise tout le temps
+        engine = pyttsx3.init()
+        engine.setProperty("rate", 170)
+        engine.say(text)
+        engine.runAndWait()
+        time.sleep(0.5) # Pour que speak offline lise tout le temps
     
     #NON FONCTIONNEL ( ACTUELLEMENT CREE UN FICHIER .mp3 mais ne lis pas le texte)
     def speak_online(self, text, output_path="output_tts_online.mp3"):

@@ -123,7 +123,7 @@ class Orchestrator:
         """
         try:
             # Step 1: Build context with history
-            if len(conversation_history) == 0:
+            if len(conversation_history) != 0:
                 user_input = self._build_context(user_input, conversation_history)
                 print(f"[Orchestrator] Use context for answering")
 

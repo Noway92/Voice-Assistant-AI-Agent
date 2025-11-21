@@ -212,7 +212,7 @@ class TableReservationAgent:
         Action Input: date: 2025-11-22, time: 19:00, name: John, phone: 0612345678, guests: 4, requests: 
         Observation: Reservation confirmed for John...
         Thought: Reservation is complete.
-        Final Answer: Your reservation for 4 people tomorrow at 7:00 PM has been successfully confirmed under the name John.
+        Final Answer: Your reservation for 4 people tomorrow at 7:00 PM has been successfully confirmed under the name John and phone 0612345678
 
         REMEMBER: 
         - Each tool can be called ONLY ONCE
