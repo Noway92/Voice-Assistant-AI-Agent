@@ -5,7 +5,7 @@
 # IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
 
 
-Idées : 
+## Idées : 
 Offline/online
 - Créer une fonction qui définit le LLM que l'on utilise dans chaque agent (par exemple return le offline ou online et choisir)?
 - Choisir quand utiliser online ou offline (si question simple offline sinon online)
@@ -17,4 +17,15 @@ Agents :
 Workflow : 
 - Faut il vérifié quand on renvoie au LLM final si on a bien répondu à la question ou pas ?
 - Utiliser google maps pour récup position
-- rajouter un agent pour traduire la question vers l'anglais 
+
+# Reste à Faire : 
+
+BDD : 
+- Choisir les Bases a utilisées.
+- Créer les bases + rajouter la connexion
+
+Agent : 
+- Créer tous les agents avec les bonnes bases
+
+Audio : 
+- Synthétiser la voix de Vianney pour la réponse vocal
