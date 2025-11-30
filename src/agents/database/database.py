@@ -1,23 +1,38 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .db_config import Base
 
+class Client(Base):
+    __tablename__ = "clients"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    phone = Column(String(20), nullable=False, unique=True, index=True)
+    email = Column(String(100))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship with reservations
+    reservations = relationship("Reservation", back_populates="client")
+
 class Reservation(Base):
     __tablename__ = "reservations"
-    
+
     id = Column(Integer, primary_key=True, index=True)
-    customer_name = Column(String(100), nullable=False)
-    customer_phone = Column(String(20), nullable=False)
-    customer_email = Column(String(100))
-    date = Column(DateTime, nullable=False)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    table_id = Column(Integer, ForeignKey("tables.id"), nullable=False)
+    date = Column(Date, nullable=False, index=True)
     time = Column(String(10), nullable=False)
-    number_of_people = Column(Integer, nullable=False)
-    table_number = Column(Integer)
-    status = Column(String(20), default="pending")  # pending, confirmed, cancelled
+    num_guests = Column(Integer, nullable=False)
+    status = Column(String(20), default="booked")  # booked, cancelled, completed
     special_requests = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    client = relationship("Client", back_populates="reservations")
+    table = relationship("Table", back_populates="reservations")
 
 class MenuItem(Base):
     __tablename__ = "menu_items"
@@ -67,10 +82,13 @@ class OrderItem(Base):
 
 class Table(Base):
     __tablename__ = "tables"
-    
+
     id = Column(Integer, primary_key=True, index=True)
-    table_number = Column(Integer, unique=True, nullable=False)
+    table_number = Column(Integer, unique=True, nullable=False, index=True)
     capacity = Column(Integer, nullable=False)
     location = Column(String(50))  # indoor, outdoor, terrace
-    is_available = Column(Boolean, default=True)
-    status = Column(String(20), default="available")  # available, occupied, reserved
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship with reservations
+    reservations = relationship("Reservation", back_populates="table")
