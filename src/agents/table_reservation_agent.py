@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime
 from langchain_ollama import OllamaLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import create_react_agent, Tool,AgentExecutor
@@ -215,6 +215,7 @@ class TableReservationAgent:
         Final Answer: Your reservation for 4 people tomorrow at 7:00 PM has been successfully confirmed under the name John and phone 0612345678
 
         REMEMBER: 
+        - today's date is {today_date}
         - Each tool can be called ONLY ONCE
         - ALWAYS check the original Question for name and phone BEFORE asking
         - NEVER use placeholders like [Name] or [Phone]
@@ -226,7 +227,7 @@ class TableReservationAgent:
         {agent_scratchpad}"""
 
         prompt = PromptTemplate(
-            input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
+            input_variables=["input", "agent_scratchpad", "tools", "tool_names","today-date"],
             template=template
         )
         
@@ -247,7 +248,11 @@ class TableReservationAgent:
     def process(self, user_input: str) -> str:
         """Process table reservation request."""
         try:
-            result = self.agent.invoke({"input": user_input})
+            today_date = datetime.now().strftime("%Y-%m-%d")
+            result = self.agent.invoke({
+                "input": user_input,
+                "today_date": today_date
+            })
             return result['output']
         except Exception as e:
             return f"Désolé, j'ai rencontré une erreur : {str(e)}. Pouvez-vous reformuler votre demande ?"
