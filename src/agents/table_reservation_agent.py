@@ -21,7 +21,7 @@ class TableReservationAgent:
             api_key = os.getenv("API_KEY_OPENAI")  # Lire la clé depuis les variables d'environnement
             if not api_key:
                 raise ValueError("API_KEY_OPENAI not found in environment variables")
-            self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=api_key)
+            self.llm = ChatOpenAI(model="gpt-5-mini", temperature=0, api_key=api_key)
         self.tools = self._create_tools()
         self.agent = self._create_agent()
     
