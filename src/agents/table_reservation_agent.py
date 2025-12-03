@@ -4,7 +4,7 @@ from langchain_ollama import OllamaLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import create_react_agent, Tool,AgentExecutor
 from langchain_core.prompts import PromptTemplate
-from .tools.reservation_tools import (
+from .tools.reservation_tools_sql import (
     check_availability_tool,
     make_reservation_tool,
     cancel_reservation_tool,
@@ -21,7 +21,7 @@ class TableReservationAgent:
             api_key = os.getenv("API_KEY_OPENAI")  # Lire la clé depuis les variables d'environnement
             if not api_key:
                 raise ValueError("API_KEY_OPENAI not found in environment variables")
-            self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=api_key)
+            self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=api_key)
         self.tools = self._create_tools()
         self.agent = self._create_agent()
     
