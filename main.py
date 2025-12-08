@@ -13,10 +13,10 @@ from core.traductor import LanguageProcessor
 from core.orchestrator import Orchestrator
 
 class VoiceAssistant:
-    def __init__(self, isOffline=True):
+    def __init__(self, isOffline=True, use_custom_xtts=False):
         """Initialize the voice assistant with all components."""
         self.stt = SpeechToText()
-        self.tts = TextToSpeech(isOffline=isOffline)
+        self.tts = TextToSpeech(isOffline=isOffline, use_custom_xtts=use_custom_xtts)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
 
@@ -40,7 +40,7 @@ class VoiceAssistant:
         # Check for exit commands
         exit_words = ['exit', 'quit', 'stop', 'bye']
         if any(word in english_input.lower() for word in exit_words):
-            self.speak("Goodbye! Au revoir!")
+            self.speak("Goodbye! Au revoir!", language=original_lang)
             return False
         
         # 2. Process through orchestrator (intent classification + agent routing + conversation history)
@@ -63,12 +63,14 @@ class VoiceAssistant:
         final_response = self.language_processor.process_output(english_response, original_lang)
         print(f"[Assistant] {final_response}")
         
-        return final_response
+        # Store language for TTS
+        return final_response, original_lang
     
-    def speak(self, text: str):
+    def speak(self, text: str, language: str = None):
         """Convert text to speech."""
         print("[Speaking] ...")
-        self.tts.speak(text)
+        lang = language if language else self.current_language
+        self.tts.speak(text, language=lang)
     
     def run(self):
         """Run the voice assistant in interactive mode."""
@@ -88,13 +90,15 @@ class VoiceAssistant:
                     continue
 
                 # Step 2-3-4: Process (translate -> orchestrate -> translate back)
-                response = self.process(user_input)
+                result = self.process(user_input)
 
                 # Exit si il a demandé de partir
-                if not response : break
+                if not result : break
+                
+                response, language = result
                 
                 # Step 5: Speak the response
-                self.speak(response)
+                self.speak(response, language=language)
                 
                 print("\n" + "-"*60 + "\n")
                 #stop = 1
@@ -112,8 +116,9 @@ class VoiceAssistant:
 def main():
     """Main entry point."""
     isOffline = False
+    use_custom_xtts = True  # Set to True to use your custom XTTS voice model
     
-    assistant = VoiceAssistant(isOffline=isOffline)
+    assistant = VoiceAssistant(isOffline=isOffline, use_custom_xtts=use_custom_xtts)
     assistant.run()
 
 if __name__ == "__main__":

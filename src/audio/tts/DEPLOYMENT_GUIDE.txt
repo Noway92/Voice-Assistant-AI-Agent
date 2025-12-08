@@ -1,0 +1,219 @@
+================================================================================
+XTTS V2 VOICE CLONING MODEL - DEPLOYMENT GUIDE
+================================================================================
+
+PROJECT SUMMARY
+--------------------------------------------------------------------------------
+- Model: XTTS v2 (518M parameters) fine-tuned for your voice
+- Training: 299 epochs over 6 days (Dec 2-7, 2025)
+- Dataset: 129 audio samples, 9.7 minutes total
+- Languages: English, French (with support for ES, DE, JA, and 12+ others)
+- Final Loss: 1.813 (down from 4.440, 59.2% improvement)
+- Hardware: RTX 4050 Laptop GPU, 6GB VRAM
+
+TRAINING PROGRESSION
+--------------------------------------------------------------------------------
+Epoch   0: Loss 4.440 (baseline)
+Epoch  60: Loss 3.403 (-23.4%)
+Epoch  99: Loss 3.126 (-8.1%)
+Epoch 139: Loss 2.862 (-8.4%)
+Epoch 199: Loss 2.458 (-14.1%)
+Epoch 299: Loss 1.813 (-26.2%)
+
+Total improvement: 4.440 → 1.813 (-59.2%)
+No overfitting detected - smooth continuous improvement
+
+FILES NEEDED FOR DEPLOYMENT
+--------------------------------------------------------------------------------
+From: run/training/XTTS_v2_MyVoice_Stable_Long-December-07-2025_12+16AM-0000000/
+
+Required files (3):
+1. best_model.pth          (~1.8GB) - Your trained model weights
+2. config.json             (~5KB)   - Model architecture configuration
+3. reference.wav   (any clean 3-6 sec audio of your voice)
+
+Optional:
+- vocab.json (from XTTS_v2_original_model_files/) - Tokenizer
+
+SYSTEM REQUIREMENTS
+--------------------------------------------------------------------------------
+Python: 3.10.11 (your current version)
+PyTorch: 2.5.1+cu121 (CUDA 12.1)
+TTS: 0.22.0 (Coqui TTS)
+GPU: CUDA-compatible (RTX 4050 or similar) - 6GB+ VRAM recommended
+CPU: Works but slower (no GPU required for inference)
+
+Verify GPU setup:
+```python
+import torch
+print(torch.cuda.is_available())        # Should be True
+print(torch.cuda.get_device_name(0))    # Should show your GPU
+```
+
+MINIMAL INFERENCE CODE
+--------------------------------------------------------------------------------
+```python
+from TTS.tts.configs.xtts_config import XttsConfig
+from TTS.tts.models.xtts import Xtts
+import torch
+
+# Load model
+config = XttsConfig()
+config.load_json("config.json")
+model = Xtts.init_from_config(config)
+model.load_checkpoint(config, checkpoint_path="best_model.pth")
+model.cuda()  # Use GPU (or model.cpu() for CPU inference)
+
+# Generate speech
+outputs = model.synthesize(
+    text="Your text here",
+    config=config,
+    speaker_wav="speaker_reference.wav",  # Your voice sample
+    language="en",  # "en", "fr", "es", "de", "ja", etc.
+    temperature=0.6,
+    repetition_penalty=15.0,
+    top_k=15,
+    top_p=0.725
+)
+
+# Save audio
+import torchaudio
+torchaudio.save("output.wav", torch.tensor(outputs["wav"]).unsqueeze(0), 24000)
+```
+
+OPTIMAL INFERENCE PARAMETERS
+--------------------------------------------------------------------------------
+Moderate (Recommended):
+- temperature: 0.6
+- repetition_penalty: 15.0
+- top_k: 15
+- top_p: 0.725
+- length_penalty: 2.0 (ignored with num_beams=1, but can set)
+
+Conservative (More stable, less variation):
+- temperature: 0.3
+- repetition_penalty: 10.0
+- top_k: 50
+- top_p: 0.8
+
+Aggressive (NOT recommended - increases hallucination):
+- temperature: 0.7-0.85
+- repetition_penalty: 30.0
+- top_k: 10
+- top_p: 0.6
+
+SPEAKER REFERENCE AUDIO
+--------------------------------------------------------------------------------
+What it is:
+- A short (3-10 second) sample of the voice you want to clone
+- One of your training audio files from dataset/wavs/
+- Example: "New Recording 1.wav"
+
+What it does:
+- XTTS analyzes this at inference time to extract voice characteristics
+- Must be provided every time you generate speech
+- Acts as "confirmation" for your fine-tuned model
+
+Why training matters:
+- Pretrained XTTS: Can clone any voice but with mediocre quality
+- Your fine-tuned model: Specialized for YOUR voice with high fidelity
+- Reference audio + fine-tuned model = Best quality
+
+Best practices:
+- Use clean, clear recording (no background noise)
+- 3-6 seconds is ideal
+- Natural speaking style
+- Can be any sentence (doesn't need to relate to generated text)
+
+WHY CONFIG.JSON IS NEEDED
+--------------------------------------------------------------------------------
+Contains two types of information:
+
+Model Architecture (REQUIRED for inference):
+- num_chars, gpt_num_audio_tokens
+- gpt_layers, gpt_n_model_channels
+- Audio processing settings (sample rates, mel specs)
+- Tokenizer configuration
+
+Training Settings (IGNORED during inference):
+- batch_size, grad_accum_steps
+- optimizer, lr_scheduler
+- save_step, print_step
+
+Why needed: TTS library uses config.json to reconstruct the model with the
+exact architecture it was trained with, then loads your weights into it.
+Without it, the library wouldn't know the model's shape/structure.
+
+GPU INFERENCE TROUBLESHOOTING
+--------------------------------------------------------------------------------
+If you get CUDA/memory errors during inference:
+
+1. Clear cache before generating:
+```python
+import torch
+torch.cuda.empty_cache()
+```
+
+2. Use CPU if needed (slower but reliable):
+```python
+model.cpu()  # Instead of model.cuda()
+```
+
+3. Generate shorter texts (long text uses more VRAM)
+
+Your training proves GPU works - if inference fails, it's just memory management.
+6GB VRAM is tight for large batches, but single inference should work fine.
+
+SUPPORTED LANGUAGES
+--------------------------------------------------------------------------------
+XTTS v2 pretrained supports 17 languages:
+- English (en)
+- French (fr)
+- Spanish (es)
+- German (de)
+- Italian (it)
+- Portuguese (pt)
+- Polish (pl)
+- Turkish (tr)
+- Russian (ru)
+- Dutch (nl)
+- Czech (cs)
+- Arabic (ar)
+- Chinese (zh-cn)
+- Japanese (ja) - requires: pip install cutlet
+- Hungarian (hu)
+- Korean (ko)
+- Hindi (hi)
+
+Your model was trained on EN+FR data but inherits multilingual capabilities
+from the pretrained XTTS v2 base model.
+
+DEPLOYMENT CHECKLIST
+--------------------------------------------------------------------------------
+[ ] Copy best_model.pth to deployment location
+[ ] Copy config.json to same directory
+[ ] Copy speaker reference audio (3-6 sec sample of your voice)
+[ ] Install Python 3.10+
+[ ] Install PyTorch 2.5.1+cu121: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+[ ] Install TTS 0.22.0: pip install TTS
+[ ] (Optional) Install cutlet for Japanese: pip install cutlet
+[ ] Test GPU availability: python -c "import torch; print(torch.cuda.is_available())"
+[ ] Test inference with minimal code above
+[ ] Adjust parameters based on quality needs
+
+FINAL NOTES
+--------------------------------------------------------------------------------
+- Model quality: 59.2% loss improvement with no overfitting
+- Text loss nearly perfect: 0.000032 (can't improve much more)
+- Mel loss still declining: 1.813 (could train further if needed)
+- Inference: Use moderate parameters for best quality
+- Hallucination: Significantly reduced compared to early training
+- Performance: GPU recommended but CPU works (slower)
+
+For questions or issues, refer to:
+- Coqui TTS documentation: https://github.com/coqui-ai/TTS
+- Your training logs: run/training/XTTS_v2_MyVoice_Stable_Long-December-07-2025_12+16AM-0000000/
+
+Model trained: December 2-7, 2025
+Guide created: December 8, 2025
+================================================================================
