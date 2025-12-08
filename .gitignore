@@ -6,3 +6,7 @@ __pycache__/
 
 # Variables d'environnement
 .env
+
+# Large model files (>100MB)
+src/audio/tts/best_model.pth
+src/audio/tts/reference.wav
