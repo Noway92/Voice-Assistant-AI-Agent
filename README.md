@@ -32,3 +32,4 @@ Agent :
 
 Audio : 
 - Synthétiser la voix de Vianney pour la réponse vocal
+- Utiliser twillio pour le numéro de téléphone
