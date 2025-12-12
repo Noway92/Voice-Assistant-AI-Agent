@@ -1,8 +1,7 @@
-# Environnements virtuels
+# Environnements virtuels locals
 python_env_voice_assistant/
 python3_10env/
 python_env2/
-old_requirements.txt
 
 # Python
 __pycache__/

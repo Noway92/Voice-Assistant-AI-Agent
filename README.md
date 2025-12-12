@@ -2,6 +2,11 @@
 
 ![Diagramme](/public/Architecture.png)
 
+# Environement
+The environement is for python 3.10
+
+If you want to use python 3.13, just use requirements_python3_13
+
 # IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
 
 
@@ -32,3 +37,4 @@ Agent :
 
 Audio : 
 - Synthétiser la voix de Vianney pour la réponse vocal
+- Utiliser twillio pour le numéro de téléphone
