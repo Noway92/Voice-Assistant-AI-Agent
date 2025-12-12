@@ -17,6 +17,10 @@ SpeechRecognition==3.14.3
 pyttsx3==2.99
 vosk==0.3.45
 
+# Phone & SMS
+twilio==9.8.8
+flask==3.1.2
+
 # Database
 SQLAlchemy==2.0.44
 psycopg2-binary==2.9.11

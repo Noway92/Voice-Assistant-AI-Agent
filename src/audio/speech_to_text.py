@@ -10,16 +10,16 @@ class SpeechToText:
         self.duration = duration
         self.samplerate = samplerate
     
-    def record_audio(self, filename="enregistrement.mp3"):
+    def record_audio(self, filename="static/enregistrement.mp3"):
         """Record audio from microphone."""
-        print("🎙️ Enregistrement...")
+        print("Enregistrement...")
         audio = sd.rec(int(self.duration * self.samplerate), 
                       samplerate=self.samplerate, channels=1)
         sd.wait()
         
         audio_int16 = (audio.flatten() * 32767).astype(np.int16)
         sf.write(filename, audio_int16, self.samplerate, format='mp3')
-        print(f"✅ Audio sauvegardé sous : {filename}")
+        print(f"Audio sauvegardé sous : {filename}")
         
         return filename
     

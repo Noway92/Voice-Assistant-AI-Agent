@@ -3,6 +3,8 @@ import os
 from openai import OpenAI
 import time
 
+
+# FONCTIONNE QUE POUR LE TELEPHONE PAS POUR l'ORCHESTRATOR
 class TextToSpeech:
     def __init__(self, isOffline=True, rate=170, voice="echo"):
         """Initialize the Text-to-Speech engine."""
@@ -10,14 +12,12 @@ class TextToSpeech:
         self.rate = rate
         self.voice = voice
         
-        # ON UTILISE QUE OFFLINE POUR L'INSTANT CAR ONLINE MAUVAIS
-        # MAIS ON INITIALISE A CHAQUE FOIS CAR pyttsx3 bug
-        """if isOffline:
+        """ if isOffline:
             self.engine = pyttsx3.init()
             self.engine.setProperty("rate", 170)
-        else:
-            self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))"""
-        # ON UTILISE QUE OFFLINE POUR L'INSTANT CAR ONLINE MAUVAIS
+        else:"""
+        self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))
+        
     
     
     def speak_offline(self, text):
@@ -45,11 +45,11 @@ class TextToSpeech:
         
         print(f"Audio sauvegardé dans : {output_path}")
     
-    def speak(self, text):
+    def speak(self, text,output_path="output_tts_online.mp3"):
         """Speak the text using the configured method."""
         """if self.use_offline:
             self.speak_offline(text)
         else:
             self.speak_online(text)"""
         # ON UTILISE QUE OFFLINE POUR L'INSTANT CAR ONLINE MAUVAIS
-        self.speak_offline(text)
+        self.speak_online(text,output_path)

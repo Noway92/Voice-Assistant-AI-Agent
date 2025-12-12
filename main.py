@@ -73,7 +73,7 @@ class VoiceAssistant:
     def run(self):
         """Run the voice assistant in interactive mode."""
         print("\n" + "="*60)
-        print("🎤 Voice Assistant Ready!")
+        print("Voice Assistant Ready!")
         print("Say 'exit' or 'quit' to stop")
         print("="*60 + "\n")
         
