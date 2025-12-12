@@ -242,7 +242,7 @@ class TableReservationAgent:
         tools=self.tools,
         verbose=True,
         handle_parsing_errors=True,
-        max_iterations=4,  # Réduit à 4 pour forcer l'arrêt
+        max_iterations=10,  # Réduit à 4 pour forcer l'arrêt
     )
     
     def process(self, user_input: str) -> str:
