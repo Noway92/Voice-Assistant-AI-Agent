@@ -19,29 +19,44 @@ class TextToSpeech:
         # Initialize custom XTTS model if requested
         if use_custom_xtts:
             print("[XTTS] Loading custom voice model...")
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            self.xtts_model_path = os.path.join(script_dir, "tts", "best_model.pth")
-            self.xtts_config_path = os.path.join(script_dir, "tts", "config.json")
-            self.xtts_reference_wav = os.path.join(script_dir, "tts", "reference.wav")
-            
-            # Load config and model
-            self.xtts_config = XttsConfig()
-            self.xtts_config.load_json(self.xtts_config_path)
-            self.xtts_model = Xtts.init_from_config(self.xtts_config)
-            self.xtts_model.load_checkpoint(
-                self.xtts_config, 
-                checkpoint_path=self.xtts_model_path,
-                use_deepspeed=False
-            )
-            
-            # Move to GPU if available
-            if torch.cuda.is_available():
-                self.xtts_model.cuda()
-                print("[XTTS] Model loaded on GPU")
-            else:
-                print("[XTTS] Model loaded on CPU")
-            
-            print("[XTTS] Custom voice model ready!")
+            try:
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                self.xtts_model_path = os.path.join(script_dir, "tts", "best_model.pth")
+                self.xtts_config_path = os.path.join(script_dir, "tts", "config.json")
+                self.xtts_reference_wav = os.path.join(script_dir, "tts", "reference.wav")
+                
+                # Load config and model
+                self.xtts_config = XttsConfig()
+                self.xtts_config.load_json(self.xtts_config_path)
+                self.xtts_model = Xtts.init_from_config(self.xtts_config)
+                
+                # Get the directory containing the model files
+                checkpoint_dir = os.path.dirname(self.xtts_model_path)
+                
+                # Check for required vocab files
+                vocab_path = os.path.join(checkpoint_dir, "vocab.json")
+                if not os.path.exists(vocab_path):
+                    raise FileNotFoundError(f"Missing vocab.json in {checkpoint_dir}. XTTS requires vocab.json and model files in the same directory.")
+                
+                self.xtts_model.load_checkpoint(
+                    self.xtts_config, 
+                    checkpoint_dir=checkpoint_dir,
+                    checkpoint_path=self.xtts_model_path,
+                    use_deepspeed=False
+                )
+                
+                # Move to GPU if available
+                if torch.cuda.is_available():
+                    self.xtts_model.cuda()
+                    print("[XTTS] Model loaded on GPU")
+                else:
+                    print("[XTTS] Model loaded on CPU")
+                
+                print("[XTTS] Custom voice model ready!")
+            except Exception as e:
+                print(f"[XTTS] Failed to load custom model: {str(e)}")
+                print("[XTTS] Falling back to offline TTS (pyttsx3)")
+                self.use_custom_xtts = False  # Disable custom XTTS on failure
         
         # ON UTILISE QUE OFFLINE POUR L'INSTANT CAR ONLINE MAUVAIS
         # MAIS ON INITIALISE A CHAQUE FOIS CAR pyttsx3 bug

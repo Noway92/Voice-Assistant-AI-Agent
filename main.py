@@ -19,6 +19,7 @@ class VoiceAssistant:
         self.tts = TextToSpeech(isOffline=isOffline, use_custom_xtts=use_custom_xtts)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
+        self.current_language = 'en'  # Default language
 
         #Historique des conversations
         self.conversation_history: List[Dict[str, str]] = []
