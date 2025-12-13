@@ -2,11 +2,11 @@
 Gestion des webhooks et interactions avec Twilio.
 """
 
-from twilio.twiml.voice_response import VoiceResponse, Gather
+from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
 import os
 from typing import Dict, Any
-from .phone_orchestrator import PhoneOrchestrator
+from .phone_main import PhoneMain
 
 
 class TwilioHandler:
@@ -24,7 +24,7 @@ class TwilioHandler:
             self.client = None
             print("Credentials Twilio non configurées. Mode démo uniquement.")
         
-        self.phone_orchestrator = PhoneOrchestrator()
+        self.phone_main = PhoneMain()
     
     def handle_incoming_call(self, request: Any) -> str:
         """
@@ -40,7 +40,7 @@ class TwilioHandler:
         
         # Message de bienvenue avec fichier MP3 personnalisé
         base_url = os.getenv('BASE_URL', f"http://{request.host}")
-        response.play(f"{base_url}/static/audio/welcome.mp3")
+        response.play(f"{base_url}/static/audio-automatic/welcome.mp3")
         
         # Enregistrer la réponse de l'utilisateur
         response.record(
@@ -59,12 +59,6 @@ class TwilioHandler:
     def process_recording(self, request: Any) -> str:
         """
         Traite l'enregistrement vocal de l'utilisateur.
-        
-        Args:
-            request: L'objet request contenant l'URL de l'enregistrement
-            
-        Returns:
-            XML TwiML response avec la réponse de l'agent
         """
         response = VoiceResponse()
         
@@ -75,41 +69,59 @@ class TwilioHandler:
             
             if not recording_url:
                 base_url = os.getenv('BASE_URL', f"http://{request.host}")
-                response.play(f"{base_url}/static/audio/error.mp3")
+                response.play(f"{base_url}/static/audio-automatic/error.mp3")
                 response.redirect('/voice')
                 return str(response)
             
-            # Traiter l'audio via le call manager et générer le MP3
-            agent_response_text, audio_url = self.phone_orchestrator.process_user_input_with_audio(
-                recording_url,
-                call_sid,
-                request.host
+            # Détecter la langue, transcrire et vérifier sortie
+            user_text, detected_lang, should_end_call = self.phone_main.detect_language_and_transcribe(
+                recording_url, 
+                call_sid
             )
             
-            # Répondre à l'utilisateur avec le fichier MP3 généré
-            response.play(audio_url)
+            # Si mot de sortie détecté
+            if should_end_call:
+                print(f"Fin d'appel demandée par l'utilisateur")
+                self.phone_main.end_call(call_sid)
+                
+                base_url = os.getenv('BASE_URL', f"http://{request.host}")
+                response.play(f"{base_url}/static/audio-automatic/goodbye.mp3")
+                response.hangup()
+                return str(response)
             
-            # Remettre automatiquement un enregistrement (boucle jusqu'au raccrochage)
+            # Si pas de texte (erreur/silence)
+            if not user_text:
+                base_url = os.getenv('BASE_URL', f"http://{request.host}")
+                response.play(f"{base_url}/static/audio-automatic/error.mp3")
+            
+            if user_text:   
+                # Traiter et générer la réponse
+                agent_response_text, audio_url = self.phone_main.process_and_generate_response(
+                    user_text,
+                    detected_lang,
+                    call_sid,
+                    request.host
+                )
+                
+                # Répondre à l'utilisateur avec le fichier MP3 généré
+                response.play(audio_url)
+            
+            # Remettre automatiquement un enregistrement (boucle)
             response.record(
                 action='/recording',
                 method='POST',
                 max_length=30,
                 timeout=3,  
                 finish_on_key='#',
-                play_beep=False,  # Pas de bip entre les questions
+                play_beep=False,
                 transcribe=False,
                 recording_status_callback='/recording-status'
             )
             
-            # Si timeout sans nouvelle question, remercier et raccrocher
-            base_url = os.getenv('BASE_URL', f"http://{request.host}")
-            response.play(f"{base_url}/static/audio/goodbye.mp3")
-            response.hangup()
-            
         except Exception as e:
             print(f"Erreur lors du traitement: {e}")
             base_url = os.getenv('BASE_URL', f"http://{request.host}")
-            response.play(f"{base_url}/static/audio/error.mp3")
+            response.play(f"{base_url}/static/audio-automatic/error.mp3")
             response.hangup()
         
         return str(response)

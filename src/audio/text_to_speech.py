@@ -22,7 +22,7 @@ class TextToSpeech:
     
     def speak_offline(self, text):
         """Use pyttsx3 for offline TTS."""
-        print(f"[TTS Offline] Speaking: {text}")
+        print(f"[TTS Offline] Speaking: {text}\n\n")
         engine = pyttsx3.init()
         engine.setProperty("rate", 170)
         engine.say(text)
@@ -32,7 +32,7 @@ class TextToSpeech:
     #NON FONCTIONNEL ( ACTUELLEMENT CREE UN FICHIER .mp3 mais ne lis pas le texte)
     def speak_online(self, text, output_path="output_tts_online.mp3"):
         """Use OpenAI API for online TTS."""
-        print(f"{self.voice} Speaking: {text}")
+        print(f"{self.voice} Speaking: {text}\n\n")
         response = self.client.audio.speech.create(
             model="tts-1",
             voice=self.voice,

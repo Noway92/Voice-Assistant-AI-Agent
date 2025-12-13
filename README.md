@@ -4,8 +4,16 @@
 
 # Environement
 The environement is for python 3.10
-
 If you want to use python 3.13, just use requirements_python3_13
+
+# Run code 
+
+use ngrok http 5000 in a terminal
+Fetch the forwarding adress
+Copy the adress in your BASE_URL 
+Go in https://console.twilio.com/us1/develop/phone-numbers/manage/incoming
+Click on the number you want to use
+Copy the adress in "Voice Configuration" → "A CALL COMES IN"
 
 # IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
 

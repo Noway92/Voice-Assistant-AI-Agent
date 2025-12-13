@@ -32,9 +32,15 @@ class AudioAdapter:
             if not recording_url.endswith('.wav'):
                 recording_url += '.wav'
             
+            #Utiliser l'authent de twillio pour récup les infos
+            account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+            auth_token = os.getenv('TWILIO_AUTH_TOKEN')
             # Télécharger le fichier
-            response = requests.get(recording_url, timeout=30)
-            response.raise_for_status()
+            response = requests.get(
+                recording_url, 
+                auth=(account_sid, auth_token),  # ← FIX ICI
+                timeout=30
+            )
             
             # Sauvegarder temporairement
             temp_file = os.path.join(self.temp_dir, f"twilio_recording_{os.urandom(8).hex()}.wav")
@@ -42,7 +48,7 @@ class AudioAdapter:
             with open(temp_file, 'wb') as f:
                 f.write(response.content)
             
-            print(f"✅ Enregistrement téléchargé: {temp_file}")
+            print(f"Enregistrement téléchargé: {temp_file}")
             return temp_file
             
         except Exception as e:
@@ -66,7 +72,7 @@ class AudioAdapter:
             if transcription and transcription.strip():
                 return transcription.strip()
             
-            print("⚠️ Transcription vide")
+            print("Transcription vide")
             return None
             
         except Exception as e:
@@ -97,6 +103,6 @@ class AudioAdapter:
         try:
             if os.path.exists(file_path):
                 os.remove(file_path)
-                print(f"🗑️ Fichier temporaire supprimé: {file_path}")
+                print(f"Fichier temporaire supprimé: {file_path}")
         except Exception as e:
-            print(f"⚠️ Impossible de supprimer {file_path}: {e}")
+            print(f"Impossible de supprimer {file_path}: {e}")

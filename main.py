@@ -37,7 +37,7 @@ class VoiceAssistant:
         english_input, original_lang = self.language_processor.process_input(user_input)
         print(f"[Language] Detected: {original_lang} | Translated: {english_input}")
 
-        # Check for exit commands
+       # Check for exit commands
         exit_words = ['exit', 'quit', 'stop', 'bye']
         if any(word in english_input.lower() for word in exit_words):
             self.speak("Goodbye! Au revoir!")

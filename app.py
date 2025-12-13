@@ -24,12 +24,23 @@ def index():
         <body>
             <h1>🍽️ Assistant Vocal Restaurant</h1>
             <p>Serveur webhook Twilio actif</p>
-            <h2>Endpoints disponibles:</h2>
+            <h2>Endpoints Twilio:</h2>
             <ul>
                 <li><code>POST /voice</code> - Appels entrants</li>
                 <li><code>POST /recording</code> - Traitement des enregistrements</li>
-                <li><code>POST /continue</code> - Continuation de conversation</li>
+                <li><code>POST /recording-status</code> - Status enregistrement</li>
+            </ul>
+            <h2>Endpoints Système:</h2>
+            <ul>
                 <li><code>GET /health</code> - Status du serveur</li>
+                <li><code>GET /static/audio-automatic/&lt;filename&gt;</code> - Fichiers audio</li>
+                <li><code>GET /static/audio-generated/&lt;filename&gt;</code> - Fichiers audio Générés</li>
+            </ul>
+            <h2>Endpoints Debug:</h2>
+            <ul>
+                <li><code>GET /debug/active-calls</code> - Voir les appels actifs</li>
+                <li><code>GET /debug/call/&lt;call_sid&gt;</code> - Détails d'un appel</li>
+                <li><code>POST /debug/clear-calls</code> - Nettoyer la mémoire</li>
             </ul>
         </body>
     </html>
@@ -91,16 +102,66 @@ def health_check():
     }
 
 
-@app.route('/static/audio/<filename>')
-def serve_audio(filename):
-    """Sert les fichiers audio générés."""
-    return send_from_directory('static/audio', filename)
+# Endpoint for Debug
+@app.route('/debug/active-calls', methods=['GET'])
+def get_active_calls():
+    """Récupère tous les appels actifs en mémoire."""
+    return {
+        "active_calls": twilio_handler.phone_orchestrator.active_calls,
+        "count": len(twilio_handler.phone_orchestrator.active_calls)
+    }
+
+
+@app.route('/debug/call/<call_sid>', methods=['GET'])
+def get_call_details(call_sid):
+    """Récupère les détails d'un appel spécifique."""
+    call_info = twilio_handler.phone_orchestrator.active_calls.get(call_sid)
+    
+    if call_info:
+        return {
+            "call_sid": call_sid,
+            "language": call_info.get('language'),
+            "last_interaction": call_info.get('last_interaction'),
+            "history": call_info.get('history', []),
+            "history_count": len(call_info.get('history', []))
+        }
+    else:
+        return {
+            "error": "Call not found",
+            "call_sid": call_sid
+        }, 404
+
+
+@app.route('/debug/clear-calls', methods=['POST'])
+def clear_all_calls():
+    """Nettoie tous les appels actifs (utile pour tests)."""
+    count = len(twilio_handler.phone_orchestrator.active_calls)
+    twilio_handler.phone_orchestrator.active_calls.clear()
+    
+    return {
+        "message": f"Cleared {count} active calls",
+        "cleared_count": count
+    }
+
+
+@app.route('/static/audio-automatic/<filename>')
+def serve_audio_automatic(filename):
+    """Sert les fichiers audio automatiques (welcome, goodbye, error)."""
+    return send_from_directory('static/audioAutomatic', filename)
+
+
+@app.route('/static/audio-generated/<filename>')
+def serve_audio_generated(filename):
+    """Sert les fichiers audio générés dynamiquement (réponses)."""
+    return send_from_directory('static/audioGenerated', filename)
 
 
 def generate_static_audio():
     """Génère les messages audio standards au démarrage."""
-    audio_dir = 'static/audio'
+    audio_dir = 'static/audioAutomatic'
+    generated_dir = 'static/audioGenerated'
     os.makedirs(audio_dir, exist_ok=True)
+    os.makedirs(generated_dir, exist_ok=True)
     
     print("Génération des fichiers audio standards...")
     tts = TextToSpeech(isOffline=False)
@@ -126,6 +187,9 @@ def generate_static_audio():
 
 
 if __name__ == '__main__':
+    # Générer les fichiers audio standards
+    generate_static_audio()
+
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     
@@ -135,8 +199,7 @@ if __name__ == '__main__':
     print(f"Debug: {debug}")
     print("=" * 60)
     
-    # Générer les fichiers audio standards
-    generate_static_audio()
+    
     
     app.run(
         host='0.0.0.0',
