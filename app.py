@@ -27,14 +27,15 @@ def index():
             <h2>Endpoints Twilio:</h2>
             <ul>
                 <li><code>POST /voice</code> - Appels entrants</li>
-                <li><code>POST /recording</code> - Traitement des enregistrements</li>
+                <li><code>POST /recording</code> - Traitement des enregistrements (réponse immédiate)</li>
+                <li><code>POST /process-async</code> - Traitement asynchrone (peut prendre du temps)</li>
                 <li><code>POST /recording-status</code> - Status enregistrement</li>
             </ul>
             <h2>Endpoints Système:</h2>
             <ul>
                 <li><code>GET /health</code> - Status du serveur</li>
-                <li><code>GET /static/audio-automatic/&lt;filename&gt;</code> - Fichiers audio</li>
-                <li><code>GET /static/audio-generated/&lt;filename&gt;</code> - Fichiers audio Générés</li>
+                <li><code>GET /static/audioAutomatic/&lt;filename&gt;</code> - Fichiers audio automatiques</li>
+                <li><code>GET /static/audio_generated/&lt;filename&gt;</code> - Fichiers audio générés</li>
             </ul>
             <h2>Endpoints Debug:</h2>
             <ul>
@@ -69,10 +70,42 @@ def handle_recording():
     """
     Webhook pour traiter les enregistrements vocaux.
     Appelé après que l'utilisateur ait enregistré son message.
+    Retourne immédiatement avec musique d'attente.
     """
     try:
         twiml_response = twilio_handler.process_recording(request)
         return Response(twiml_response, mimetype='text/xml')
+    except Exception as e:
+        print(f"Erreur /recording: {e}")
+        return Response(
+            '<Response><Say language="fr-FR">Erreur du serveur</Say></Response>',
+            mimetype='text/xml'
+        )
+
+
+@app.route('/process-async', methods=['POST'])
+def process_async():
+    """
+    Route de traitement asynchrone (peut prendre du temps).
+    Appelée après la musique d'attente.
+    """
+    try:
+        recording_url = request.values.get('recording_url')
+        call_sid = request.values.get('call_sid')
+        
+        twiml_response = twilio_handler.process_async_recording(
+            recording_url, 
+            call_sid,
+            request
+        )
+        return Response(twiml_response, mimetype='text/xml')
+    except Exception as e:
+        print(f"Erreur /process-async: {e}")
+        base_url = os.getenv('BASE_URL', f"http://{request.host}")
+        return Response(
+            f'<Response><Play>{base_url}/static/audioAutomatic/error.mp3</Play><Hangup/></Response>',
+            mimetype='text/xml'
+        )
     except Exception as e:
         print(f"Erreur /recording: {e}")
         return Response(
@@ -198,8 +231,6 @@ if __name__ == '__main__':
     print(f"Port: {port}")
     print(f"Debug: {debug}")
     print("=" * 60)
-    
-    
     
     app.run(
         host='0.0.0.0',

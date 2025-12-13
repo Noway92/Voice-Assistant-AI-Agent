@@ -2,11 +2,13 @@
 Gestion des webhooks et interactions avec Twilio.
 """
 
-from twilio.twiml.voice_response import VoiceResponse
-from twilio.rest import Client
+
 import os
+import urllib.parse
 from typing import Dict, Any
 from .phone_main import PhoneMain
+from twilio.twiml.voice_response import VoiceResponse
+from twilio.rest import Client
 
 
 class TwilioHandler:
@@ -58,7 +60,7 @@ class TwilioHandler:
     
     def process_recording(self, request: Any) -> str:
         """
-        Traite l'enregistrement vocal de l'utilisateur.
+        Traite l'enregistrement vocal - retourne immédiatement avec musique d'attente.
         """
         response = VoiceResponse()
         
@@ -73,6 +75,44 @@ class TwilioHandler:
                 response.redirect('/voice')
                 return str(response)
             
+            saved_lang = self.phone_main.active_calls.get(call_sid, {}).get('language')
+        
+            # Messages d'attente multilingues
+            waiting_messages = {
+                'fr': ("Un instant s'il vous plaît", 'fr-FR', 'Polly.Lea'),
+                'en': ("One moment please", 'en-US', 'Polly.Joanna'),
+                'es': ("Un momento por favor", 'es-ES', 'Polly.Lucia'),
+                'de': ("Einen Moment bitte", 'de-DE', 'Polly.Vicki')
+            }
+            
+            # Utiliser la langue sauvegardée ou défaut anglais
+            message, lang_code, voice = waiting_messages.get(saved_lang or 'fr', waiting_messages['fr'])
+            
+            # Dire le message d'attente dans la bonne langue
+            response.say(message, language=lang_code, voice=voice)
+            # Rediriger vers le traitement asynchrone (passe les paramètres en query)
+            
+            params = urllib.parse.urlencode({
+                'recording_url': recording_url,
+                'call_sid': call_sid
+            })
+            response.redirect(f'/process-async?{params}', method='POST')
+            
+        except Exception as e:
+            print(f"Erreur lors du traitement: {e}")
+            base_url = os.getenv('BASE_URL', f"http://{request.host}")
+            response.play(f"{base_url}/static/audio-automatic/error.mp3")
+            response.hangup()
+        
+        return str(response)
+    
+    def process_async_recording(self, recording_url: str, call_sid: str, request: Any) -> str:
+        """
+        Traitement asynchrone (peut prendre du temps sans timeout Twilio).
+        """
+        response = VoiceResponse()
+        
+        try:
             # Détecter la langue, transcrire et vérifier sortie
             user_text, detected_lang, should_end_call = self.phone_main.detect_language_and_transcribe(
                 recording_url, 
@@ -95,7 +135,7 @@ class TwilioHandler:
                 response.play(f"{base_url}/static/audio-automatic/error.mp3")
             
             if user_text:   
-                # Traiter et générer la réponse
+    
                 agent_response_text, audio_url = self.phone_main.process_and_generate_response(
                     user_text,
                     detected_lang,
@@ -119,7 +159,7 @@ class TwilioHandler:
             )
             
         except Exception as e:
-            print(f"Erreur lors du traitement: {e}")
+            print(f"Erreur lors du traitement async: {e}")
             base_url = os.getenv('BASE_URL', f"http://{request.host}")
             response.play(f"{base_url}/static/audio-automatic/error.mp3")
             response.hangup()
