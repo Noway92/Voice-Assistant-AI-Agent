@@ -22,7 +22,7 @@ def index():
     <html>
         <head><title>Assistant Vocal Restaurant</title></head>
         <body>
-            <h1>🍽️ Assistant Vocal Restaurant</h1>
+            <h1>Assistant Vocal Restaurant</h1>
             <p>Serveur webhook Twilio actif</p>
             <h2>Endpoints Twilio:</h2>
             <ul>
@@ -30,6 +30,7 @@ def index():
                 <li><code>POST /recording</code> - Traitement des enregistrements (réponse immédiate)</li>
                 <li><code>POST /process-async</code> - Traitement asynchrone (peut prendre du temps)</li>
                 <li><code>POST /recording-status</code> - Status enregistrement</li>
+                <li><code>POST /wait-for-response</code> - Webhook pour attendre que le traitement asynchrone soit terminé.</li>
             </ul>
             <h2>Endpoints Système:</h2>
             <ul>
@@ -125,6 +126,22 @@ def recording_status():
     return Response('', status=200)
 
 
+@app.route('/wait-for-response', methods=['POST'])
+def wait_for_response():
+    """
+    Webhook pour attendre que le traitement asynchrone soit terminé.
+    """
+    try:
+        twiml_response = twilio_handler.wait_for_response(request)
+        return Response(twiml_response, mimetype='text/xml')
+    except Exception as e:
+        print(f"Erreur /wait-for-response: {e}")
+        return Response(
+            '<Response><Say language="fr-FR">Erreur du serveur</Say></Response>',
+            mimetype='text/xml'
+        )
+
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """Endpoint de santé pour vérifier que le serveur fonctionne."""
@@ -140,15 +157,15 @@ def health_check():
 def get_active_calls():
     """Récupère tous les appels actifs en mémoire."""
     return {
-        "active_calls": twilio_handler.phone_orchestrator.active_calls,
-        "count": len(twilio_handler.phone_orchestrator.active_calls)
+        "active_calls": twilio_handler.phone_main.active_calls,
+        "count": len(twilio_handler.phone_main.active_calls)
     }
 
 
 @app.route('/debug/call/<call_sid>', methods=['GET'])
 def get_call_details(call_sid):
     """Récupère les détails d'un appel spécifique."""
-    call_info = twilio_handler.phone_orchestrator.active_calls.get(call_sid)
+    call_info = twilio_handler.phone_main.active_calls.get(call_sid)
     
     if call_info:
         return {
@@ -168,8 +185,8 @@ def get_call_details(call_sid):
 @app.route('/debug/clear-calls', methods=['POST'])
 def clear_all_calls():
     """Nettoie tous les appels actifs (utile pour tests)."""
-    count = len(twilio_handler.phone_orchestrator.active_calls)
-    twilio_handler.phone_orchestrator.active_calls.clear()
+    count = len(twilio_handler.phone_main.active_calls)
+    twilio_handler.phone_main.active_calls.clear()
     
     return {
         "message": f"Cleared {count} active calls",

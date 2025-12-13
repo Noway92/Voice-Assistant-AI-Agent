@@ -55,12 +55,12 @@ class PhoneMain:
             
             if saved_lang:
                 # Réutiliser la langue sauvegardée
-                print(f"Utilisateur ({saved_lang}): {user_text}")
+                print(f"\n\n\nUtilisateur ({saved_lang}): {user_text}")
                 detected_lang = saved_lang
             else:
                 # Première fois : détecter la langue
                 _, detected_lang = self.language_processor.process_input(user_text)
-                print(f"Utilisateur ({detected_lang}) [DÉTECTÉ]: {user_text}")
+                print(f"\n\n\nUtilisateur ({detected_lang}) [DÉTECTÉ]: {user_text}")
                 
                 # Sauvegarder pour les prochains messages
                 if call_sid not in self.active_calls:

@@ -1,10 +1,11 @@
 """
-Gestion des webhooks et interactions avec Twilio.
+Gestion des webhooks et interactions avec Twilio - VERSION ASYNCHRONE.
 """
 
 
 import os
 import urllib.parse
+import threading
 from typing import Dict, Any
 from .phone_main import PhoneMain
 from twilio.twiml.voice_response import VoiceResponse
@@ -60,7 +61,8 @@ class TwilioHandler:
     
     def process_recording(self, request: Any) -> str:
         """
-        Traite l'enregistrement vocal - retourne immédiatement avec musique d'attente.
+        Traite l'enregistrement vocal - lance le traitement asynchrone en arrière-plan.
+        Retourne immédiatement avec musique d'attente.
         """
         response = VoiceResponse()
         
@@ -75,28 +77,28 @@ class TwilioHandler:
                 response.redirect('/voice')
                 return str(response)
             
-            saved_lang = self.phone_main.active_calls.get(call_sid, {}).get('language')
-        
-            # Messages d'attente multilingues
-            waiting_messages = {
-                'fr': ("Un instant s'il vous plaît", 'fr-FR', 'Polly.Lea'),
-                'en': ("One moment please", 'en-US', 'Polly.Joanna'),
-                'es': ("Un momento por favor", 'es-ES', 'Polly.Lucia'),
-                'de': ("Einen Moment bitte", 'de-DE', 'Polly.Vicki')
-            }
+            # Initialiser l'état de l'appel
+            if call_sid not in self.phone_main.active_calls:
+                self.phone_main.active_calls[call_sid] = {}
             
-            # Utiliser la langue sauvegardée ou défaut anglais
-            message, lang_code, voice = waiting_messages.get(saved_lang or 'fr', waiting_messages['fr'])
+            self.phone_main.active_calls[call_sid]['response_ready'] = False
+            self.phone_main.active_calls[call_sid]['processing'] = True
             
-            # Dire le message d'attente dans la bonne langue
-            response.say(message, language=lang_code, voice=voice)
-            # Rediriger vers le traitement asynchrone (passe les paramètres en query)
+            # Lancer le traitement asynchrone en arrière-plan (NE PAS ATTENDRE)
+            base_url = os.getenv('BASE_URL', f"http://{request.host}")
+            thread = threading.Thread(
+                target=self._process_recording_async,
+                args=(recording_url, call_sid, base_url)
+            )
+            thread.daemon = True
+            thread.start()
             
-            params = urllib.parse.urlencode({
-                'recording_url': recording_url,
-                'call_sid': call_sid
-            })
-            response.redirect(f'/process-async?{params}', method='POST')
+            # Jouer une musique d'attente courte
+            response.play(f"{base_url}/static/audio-automatic/waiting.mp3")
+            
+            # Rediriger vers une page d'attente qui va checker le résultat
+            params = urllib.parse.urlencode({'call_sid': call_sid})
+            response.redirect(f'/wait-for-response?{params}', method='POST')
             
         except Exception as e:
             print(f"Erreur lors du traitement: {e}")
@@ -106,14 +108,19 @@ class TwilioHandler:
         
         return str(response)
     
-    def process_async_recording(self, recording_url: str, call_sid: str, request: Any) -> str:
+    def _process_recording_async(self, recording_url: str, call_sid: str, base_url: str):
         """
-        Traitement asynchrone (peut prendre du temps sans timeout Twilio).
+        Traitement VRAIMENT asynchrone en arrière-plan (dans un thread).
+        N'est pas appelé par le webhook Twilio directement.
         """
-        response = VoiceResponse()
-        
         try:
-            # Détecter la langue, transcrire et vérifier sortie
+            print(f"[ASYNC] Début du traitement pour {call_sid}")
+            
+            # S'assurer que le call_sid existe dans active_calls
+            if call_sid not in self.phone_main.active_calls:
+                self.phone_main.active_calls[call_sid] = {}
+            
+            # Détecter la langue et transcrire
             user_text, detected_lang, should_end_call = self.phone_main.detect_language_and_transcribe(
                 recording_url, 
                 call_sid
@@ -121,45 +128,101 @@ class TwilioHandler:
             
             # Si mot de sortie détecté
             if should_end_call:
-                print(f"Fin d'appel demandée par l'utilisateur")
+                print(f"[ASYNC] Fin d'appel demandée par l'utilisateur")
                 self.phone_main.end_call(call_sid)
-                
-                base_url = os.getenv('BASE_URL', f"http://{request.host}")
-                response.play(f"{base_url}/static/audio-automatic/goodbye.mp3")
-                response.hangup()
-                return str(response)
+                # Stocker le résultat
+                self.phone_main.active_calls[call_sid]['response_audio'] = f"{base_url}/static/audio-automatic/goodbye.mp3"
+                self.phone_main.active_calls[call_sid]['should_hangup'] = True
+                self.phone_main.active_calls[call_sid]['response_ready'] = True
+                self.phone_main.active_calls[call_sid]['processing'] = False
+                return
             
             # Si pas de texte (erreur/silence)
             if not user_text:
-                base_url = os.getenv('BASE_URL', f"http://{request.host}")
-                response.play(f"{base_url}/static/audio-automatic/error.mp3")
+                print(f"[ASYNC] Pas de texte détecté")
+                self.phone_main.active_calls[call_sid]['response_audio'] = f"{base_url}/static/audio-automatic/error.mp3"
+                self.phone_main.active_calls[call_sid]['response_ready'] = True
+                self.phone_main.active_calls[call_sid]['processing'] = False
+                return
             
-            if user_text:   
-    
-                agent_response_text, audio_url = self.phone_main.process_and_generate_response(
-                    user_text,
-                    detected_lang,
-                    call_sid,
-                    request.host
-                )
-                
-                # Répondre à l'utilisateur avec le fichier MP3 généré
-                response.play(audio_url)
-            
-            # Remettre automatiquement un enregistrement (boucle)
-            response.record(
-                action='/recording',
-                method='POST',
-                max_length=30,
-                timeout=3,  
-                finish_on_key='#',
-                play_beep=False,
-                transcribe=False,
-                recording_status_callback='/recording-status'
+            # ICI C'EST LA PARTIE QUI PEUT DURER LONGTEMPS (30+ secondes)
+            print(f"[ASYNC] Appel à process_and_generate_response (peut prendre du temps)")
+            agent_response_text, audio_url = self.phone_main.process_and_generate_response(
+                user_text,
+                detected_lang,
+                call_sid,
+                base_url
             )
+            print(f"[ASYNC] Réponse reçue: {agent_response_text}...")
+            
+            # Stocker le résultat pour que le webhook puisse le récupérer
+            self.phone_main.active_calls[call_sid]['response_audio'] = audio_url
+            self.phone_main.active_calls[call_sid]['response_ready'] = True
+            self.phone_main.active_calls[call_sid]['processing'] = False
             
         except Exception as e:
-            print(f"Erreur lors du traitement async: {e}")
+            print(f"[ASYNC] Erreur lors du traitement: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            # S'assurer que le call_sid existe avant d'écrire
+            if call_sid not in self.phone_main.active_calls:
+                self.phone_main.active_calls[call_sid] = {}
+            
+            self.phone_main.active_calls[call_sid]['response_audio'] = f"{base_url}/static/audio-automatic/error.mp3"
+            self.phone_main.active_calls[call_sid]['response_ready'] = True
+            self.phone_main.active_calls[call_sid]['processing'] = False
+    
+    def wait_for_response(self, request: Any) -> str:
+        """
+        Webhook appelé après la musique d'attente.
+        Vérifie si la réponse de l'agent est prête, sinon rejoue de la musique.
+        """
+        response = VoiceResponse()
+        call_sid = request.values.get('call_sid')
+        
+        try:
+            # Récupérer les infos de l'appel
+            call_info = self.phone_main.active_calls.get(call_sid, {})
+            
+            # Vérifier si la réponse est prête
+            if call_info.get('response_ready'):
+                print(f"[WAIT] Réponse prête pour {call_sid}")
+                audio_url = call_info.get('response_audio')
+                response.play(audio_url)
+                
+                # Nettoyer le flag
+                call_info['response_ready'] = False
+                
+                # Vérifier si on doit raccrocher
+                if call_info.get('should_hangup'):
+                    response.hangup()
+                else:
+                    # Remettre un enregistrement (boucle)
+                    response.record(
+                        action='/recording',
+                        method='POST',
+                        max_length=30,
+                        timeout=3,
+                        finish_on_key='#',
+                        play_beep=False,
+                        transcribe=False,
+                        recording_status_callback='/recording-status'
+                    )
+            else:
+                # La réponse n'est pas encore prête, rejouer musique d'attente
+                print(f"[WAIT] Réponse pas encore prête pour {call_sid}, on attend...")
+                base_url = os.getenv('BASE_URL', f"http://{request.host}")
+                
+                # Jouer musique d'attete
+                response.play(f"{base_url}/static/audio-automatic/waiting.mp3")
+                
+                # Rediriger vers soi-même (boucle d'attente)
+                params = urllib.parse.urlencode({'call_sid': call_sid})
+                response.redirect(f'/wait-for-response?{params}', method='POST')
+        
+        except Exception as e:
+            print(f"Erreur lors de l'attente: {e}")
             base_url = os.getenv('BASE_URL', f"http://{request.host}")
             response.play(f"{base_url}/static/audio-automatic/error.mp3")
             response.hangup()
