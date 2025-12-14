@@ -107,12 +107,6 @@ def process_async():
             f'<Response><Play>{base_url}/static/audioAutomatic/error.mp3</Play><Hangup/></Response>',
             mimetype='text/xml'
         )
-    except Exception as e:
-        print(f"Erreur /recording: {e}")
-        return Response(
-            '<Response><Say language="fr-FR">Erreur de traitement</Say></Response>',
-            mimetype='text/xml'
-        )
 
 
 @app.route('/recording-status', methods=['POST'])

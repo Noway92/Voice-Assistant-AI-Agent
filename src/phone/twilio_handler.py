@@ -114,7 +114,7 @@ class TwilioHandler:
         N'est pas appelé par le webhook Twilio directement.
         """
         try:
-            print(f"[ASYNC] Début du traitement pour {call_sid}")
+            print(f"[ASYNC] Début du traitement pour {call_sid}\n\n\n")
             
             # S'assurer que le call_sid existe dans active_calls
             if call_sid not in self.phone_main.active_calls:
@@ -129,7 +129,6 @@ class TwilioHandler:
             # Si mot de sortie détecté
             if should_end_call:
                 print(f"[ASYNC] Fin d'appel demandée par l'utilisateur")
-                self.phone_main.end_call(call_sid)
                 # Stocker le résultat
                 self.phone_main.active_calls[call_sid]['response_audio'] = f"{base_url}/static/audio-automatic/goodbye.mp3"
                 self.phone_main.active_calls[call_sid]['should_hangup'] = True
@@ -153,7 +152,7 @@ class TwilioHandler:
                 call_sid,
                 base_url
             )
-            print(f"[ASYNC] Réponse reçue: {agent_response_text}...")
+            print(f"[ASYNC] Réponse reçue: {agent_response_text}")
             
             # Stocker le résultat pour que le webhook puisse le récupérer
             self.phone_main.active_calls[call_sid]['response_audio'] = audio_url

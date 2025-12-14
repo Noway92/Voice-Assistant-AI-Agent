@@ -98,8 +98,8 @@ class Orchestrator:
         if not history or len(history) == 0:
             return current_input
         
-        # Take last 3 exchanges (6 messages) for context
-        recent_history = history[-6:] if len(history) > 6 else history
+        # Take last 5 exchanges (10 messages) for context
+        recent_history = history[-10:] if len(history) > 10 else history
         
         context_parts = ["Previous conversation context:"]
         for msg in recent_history:

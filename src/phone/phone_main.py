@@ -55,12 +55,12 @@ class PhoneMain:
             
             if saved_lang:
                 # Réutiliser la langue sauvegardée
-                print(f"\n\n\nUtilisateur ({saved_lang}): {user_text}")
+                print(f"\n\nUtilisateur ({saved_lang}): {user_text}")
                 detected_lang = saved_lang
             else:
                 # Première fois : détecter la langue
                 _, detected_lang = self.language_processor.process_input(user_text)
-                print(f"\n\n\nUtilisateur ({detected_lang}) [DÉTECTÉ]: {user_text}")
+                print(f"\n\nUtilisateur ({detected_lang}) [DÉTECTÉ]: {user_text}")
                 
                 # Sauvegarder pour les prochains messages
                 if call_sid not in self.active_calls:
@@ -117,6 +117,7 @@ class PhoneMain:
             
             # Récupérer l'historique
             conversation_history = self.active_calls.get(call_sid, {}).get('history', [])
+            #print(f"Voici l'historique actuel : \n{conversation_history}\n")
             
             # Traiter via l'orchestrateur (en anglais)
             english_response = self.orchestrator.process_request(
@@ -155,11 +156,14 @@ class PhoneMain:
                 "content": english_response
             })
             
-            self.active_calls[call_sid] = {
-                "history": conversation_history,
-                "last_interaction": user_text,
-                "language": detected_lang
-            }
+            # Mettre à jour le dictionnaire existant au lieu de le remplacer
+            # Cela préserve les clés comme 'response_ready', 'processing', etc.
+            if call_sid not in self.active_calls:
+                self.active_calls[call_sid] = {}
+            
+            self.active_calls[call_sid]['history'] = conversation_history
+            self.active_calls[call_sid]['last_interaction'] = user_text
+            self.active_calls[call_sid]['language'] = detected_lang
             
             return agent_response, audio_url
             
@@ -167,28 +171,3 @@ class PhoneMain:
             print(f"Erreur traitement: {e}")
             base_url = os.getenv('BASE_URL', f"http://{host}")
             return "Erreur technique", f"{base_url}/static/audio-automatic/error.mp3"
-    
-    # Fonction utile en Production, PAS UTILISE 
-    def end_call(self, call_sid: str):
-        """
-        Termine un appel et nettoie les données associées.
-        
-        Args:
-            call_sid: Identifiant de l'appel
-        """
-        if call_sid in self.active_calls:
-            print(f"Fin de l'appel {call_sid}")
-            del self.active_calls[call_sid]
-
-    # Fonction utile en Production, PAS UTILISE
-    def get_call_history(self, call_sid: str) -> list:
-        """
-        Récupère l'historique d'un appel.
-        
-        Args:
-            call_sid: Identifiant de l'appel
-            
-        Returns:
-            Liste des messages de la conversation
-        """
-        return self.active_calls.get(call_sid, {}).get('history', [])
