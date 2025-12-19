@@ -12,10 +12,12 @@ from src.audio.speech_to_text import SpeechToText
 class AudioAdapter:
     """Adapte les formats audio entre Twilio et le système local."""
     
-    def __init__(self):
+    def __init__(self,isOffline=False):
         """Initialise l'adaptateur audio."""
         self.temp_dir = tempfile.gettempdir()
-        self.stt = SpeechToText()  
+        self.isOffline = isOffline
+        self.stt = SpeechToText(isOffline)  
+        
     
     def download_twilio_recording(self, recording_url: str) -> str:
         """
@@ -66,8 +68,10 @@ class AudioAdapter:
             Texte transcrit ou None en cas d'erreur
         """
         try:
-            # Utiliser le module speech_to_text existant
-            transcription = self.stt.transcribe(audio_file_path)
+            if self.isOffline :
+                transcription = self.stt.transcribe_offline(audio_file_path)
+            else:
+                transcription = self.stt.transcribe_online(audio_file_path)
             
             if transcription and transcription.strip():
                 return transcription.strip()

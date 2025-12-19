@@ -15,7 +15,7 @@ from core.orchestrator import Orchestrator
 class VoiceAssistant:
     def __init__(self, isOffline=True):
         """Initialize the voice assistant with all components."""
-        self.stt = SpeechToText()
+        self.stt = SpeechToText(isOffline=isOffline)
         self.tts = TextToSpeech(isOffline=isOffline)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)

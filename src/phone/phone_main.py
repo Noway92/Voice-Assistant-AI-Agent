@@ -16,7 +16,7 @@ class PhoneMain:
     
     def __init__(self):
         """Initialise le gestionnaire d'appels."""
-        self.audio_adapter = AudioAdapter()
+        self.audio_adapter = AudioAdapter(isOffline=False) # Utiliser le STT en ligne
         self.orchestrator = Orchestrator(isOffline=False) # Utiliser LLM en ligne
         self.tts = TextToSpeech(isOffline=False)  # Utiliser le TTS en ligne
         self.language_processor = LanguageProcessor()
