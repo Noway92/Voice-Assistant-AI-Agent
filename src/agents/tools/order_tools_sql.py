@@ -79,10 +79,10 @@ class OrderToolsSQL:
             # Find the order
             order = db.query(Order).filter(Order.id == order_id).first()
             if not order:
-                return f"Order #{order_id} not found"
+                return f"Observation: Order #{order_id} not found"
             
             if order.status not in ["preparing"]:
-                return f"Cannot modify order #{order_id}. Order status is: {order.status}"
+                return f"Observation: Cannot modify order #{order_id}. Order status is: {order.status}"
             
             # Find the menu item (case-insensitive partial match)
             menu_item = db.query(MenuItem).filter(
@@ -103,6 +103,7 @@ class OrderToolsSQL:
                 # Update quantity of existing item
                 existing_item.quantity += quantity
                 existing_item.subtotal = existing_item.quantity * existing_item.unit_price
+                db.flush()  # Ensure update is written before calculating total
                 message = f"Updated {menu_item.name} quantity to {existing_item.quantity}"
             else:
                 # Add new item
@@ -116,6 +117,7 @@ class OrderToolsSQL:
                     special_requests=special_requests if special_requests else None
                 )
                 db.add(order_item)
+                db.flush()  # Ensure insert is written before calculating total
                 message = f"Added {quantity}x {menu_item.name} to order"
             
             # Update order total
@@ -168,7 +170,7 @@ class OrderToolsSQL:
             ).first()
             
             if not menu_item:
-                return f"Menu item '{item_name}' not found"
+                return f"Observation: Menu item '{item_name}' not found"
             
             # Find the order item
             order_item = db.query(OrderItem).filter(
@@ -177,7 +179,7 @@ class OrderToolsSQL:
             ).first()
             
             if not order_item:
-                return f"{menu_item.name} is not in order #{order_id}"
+                return f"Observation: {menu_item.name} is not in order #{order_id}"
             
             if new_quantity == 0:
                 # Remove item
@@ -198,11 +200,11 @@ class OrderToolsSQL:
             
             db.commit()
             
-            return f"{message}. Current total: €{order.total_amount:.2f}"
+            return f"Observation: {message}. Current total: €{order.total_amount:.2f}"
         
         except Exception as e:
             db.rollback()
-            return f"Error updating item: {str(e)}"
+            return f"Observation: Error updating item: {str(e)}"
         finally:
             db.close()
 
