@@ -15,7 +15,7 @@ sounddevice==0.5.3
 soundfile==0.13.1
 SpeechRecognition==3.14.3
 pyttsx3==2.99
-vosk==0.3.45
+vosk==0.3.44
 
 # Database
 SQLAlchemy==2.0.44

@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import json
 import os
 from dotenv import load_dotenv
+import base64
 
 from typing import List, Dict, Any, Optional
 import chromadb
@@ -33,43 +34,44 @@ class EmbeddingsManager:
         """Initialise le gestionnaire."""
         self.json_path = Path(json_path)
         self.collection_name = collection_name
-        
+
         # Configuration OpenAI
         self.api_key = os.getenv("API_KEY_OPENAI")
-        
+
         # Configuration ChromaDB depuis .env
         chroma_host = os.getenv("CHROMA_HOST")
-        chroma_port = int(os.getenv("CHROMA_PORT"))
+        chroma_port = os.getenv("CHROMA_PORT")
         chroma_user = os.getenv("CHROMA_USER")
         chroma_password = os.getenv("CHROMA_PASSWORD")
         
+        # Préparation des headers pour authentification
+        headers = {}
+        if chroma_user and chroma_password:
+            import base64
+            credentials = base64.b64encode(f"{chroma_user}:{chroma_password}".encode()).decode()
+            headers["Authorization"] = f"Basic {credentials}"
+
         # Connexion ChromaDB
         print(f"Connecting to ChromaDB ({chroma_host}:{chroma_port})...")
 
         try:
-            # ChromaDB 0.4.22 : HttpClient accepte host et port uniquement
+            # ChromaDB 0.4.22 : HttpClient accepte host, port, headers...
             self.client = chromadb.HttpClient(
-                host=os.getenv("CHROMA_HOST"),
-                port=int(os.getenv("CHROMA_PORT")),
-                tenant="default_tenant",
-                database="default_database"
+                host=chroma_host,
+                port=chroma_port,
+                headers=headers
             )
-            
-            if chroma_user and chroma_password:
-                print(f"Credentials configured: {chroma_user}")
-            else:
-                print("No authentication configured")
-            
+
+            print(f"Credentials configured: {chroma_user}")
             print("Connected to ChromaDB successfully")
         except Exception as e:
             raise ConnectionError(f"Failed to connect to ChromaDB at {chroma_host}:{chroma_port}. Is the server running? Error: {e}")
-        
+
         # Fonction d'embedding OpenAI
         self.embedding_function = embedding_functions.OpenAIEmbeddingFunction(
             api_key=self.api_key,
             model_name="text-embedding-3-small"
         )
-        
     
     def _load_json(self) -> Dict[str, Any]:
         """Charge le fichier JSON."""
