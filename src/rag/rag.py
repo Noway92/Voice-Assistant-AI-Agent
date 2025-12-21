@@ -391,7 +391,7 @@ def print_menu():
     print("\n" + "=" * 70)
     print("EMBEDDINGS MANAGER - CHROMADB")
     print("=" * 70)
-    print("\n📋 Choisissez une option:\n")
+    print("\nChoisissez une option:\n")
     print("1 CREATE - Créer tous les embeddings (base vierge)")
     print("2 UPDATE - Mettre à jour les embeddings")
     print("3 SEARCH - Rechercher dans la base")
