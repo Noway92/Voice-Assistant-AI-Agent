@@ -1,0 +1,280 @@
+{
+  "metadata": {
+    "name": "reservation_scenarios",
+    "description": "End-to-end test scenarios for table reservation agent",
+    "version": "1.0",
+    "total_scenarios": 30
+  },
+  "scenarios": [
+    {
+      "name": "simple_reservation_complete_info",
+      "task_type": "reservation",
+      "description": "Customer provides all information upfront",
+      "turns": [
+        {
+          "user_input": "I'd like to book a table for 4 people tomorrow at 7pm. My name is John Smith and my phone is 0612345678",
+          "expected_keywords": ["confirmed", "table", "4", "7", "John"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed", "reservation"],
+        "required_action": "make_reservation",
+        "action_indicators": ["confirmed", "booked", "reserved"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "reservation_missing_name",
+      "task_type": "reservation",
+      "description": "Customer doesn't provide name initially",
+      "turns": [
+        {
+          "user_input": "Book a table for 2 at 8pm tomorrow",
+          "expected_keywords": ["name", "phone"]
+        },
+        {
+          "user_input": "My name is Marie and phone is 0698765432",
+          "expected_keywords": ["confirmed", "Marie"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 3
+      }
+    },
+    {
+      "name": "check_availability_only",
+      "task_type": "reservation",
+      "description": "Customer only wants to check availability",
+      "turns": [
+        {
+          "user_input": "Do you have tables available for 6 people this Saturday at 8pm?",
+          "expected_keywords": ["available", "table"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["available"],
+        "max_turns": 1
+      }
+    },
+    {
+      "name": "cancel_reservation",
+      "task_type": "reservation",
+      "description": "Customer wants to cancel existing reservation",
+      "turns": [
+        {
+          "user_input": "I need to cancel my reservation for tomorrow at 7pm, my name is Pierre Dupont",
+          "expected_keywords": ["cancelled", "cancel"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["cancel"],
+        "required_action": "cancel_reservation",
+        "action_indicators": ["cancelled", "cancel"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "large_group_reservation",
+      "task_type": "reservation",
+      "description": "Large group booking",
+      "turns": [
+        {
+          "user_input": "We're a group of 12 people, can we reserve for Friday at 8pm?",
+          "expected_keywords": ["12", "group", "available"]
+        },
+        {
+          "user_input": "My name is Sophie Martin, phone 0687654321",
+          "expected_keywords": ["confirmed", "Sophie"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["reservation", "12"],
+        "max_turns": 3
+      }
+    },
+    {
+      "name": "reservation_no_availability",
+      "task_type": "reservation",
+      "description": "No tables available scenario",
+      "turns": [
+        {
+          "user_input": "Book a table for 20 people tonight at 9pm",
+          "expected_keywords": ["no", "available", "sorry"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["available"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "reservation_special_requests",
+      "task_type": "reservation",
+      "description": "Reservation with special requests",
+      "turns": [
+        {
+          "user_input": "I'd like to reserve a table for 4 on the terrace for tomorrow at 7pm. My name is Lucas and phone 0654321098. It's for a birthday.",
+          "expected_keywords": ["confirmed", "birthday", "terrace"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "view_existing_reservations",
+      "task_type": "reservation",
+      "description": "Customer wants to see their reservations",
+      "turns": [
+        {
+          "user_input": "Can you check if I have any reservations? My name is Jean",
+          "expected_keywords": ["reservation"]
+        }
+      ],
+      "success_criteria": {
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "reservation_date_format_challenge",
+      "task_type": "reservation",
+      "description": "Customer uses informal date format",
+      "turns": [
+        {
+          "user_input": "I want to book for next Saturday evening, around 7:30, for 4 people. Name is Alex, 0612345678",
+          "expected_keywords": ["Saturday", "confirmed"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 3
+      }
+    },
+    {
+      "name": "modify_reservation",
+      "task_type": "reservation",
+      "description": "Customer wants to modify existing reservation",
+      "turns": [
+        {
+          "user_input": "I have a reservation for tomorrow at 7pm but I'd like to change it to 8pm. My name is Paul",
+          "expected_keywords": ["modify", "change", "8pm"]
+        }
+      ],
+      "success_criteria": {
+        "max_turns": 3
+      }
+    },
+    {
+      "name": "french_reservation",
+      "task_type": "reservation",
+      "description": "Reservation request in French",
+      "turns": [
+        {
+          "user_input": "Je voudrais réserver une table pour 3 personnes demain soir à 20h. Je m'appelle François, mon numéro est 0612345678",
+          "expected_keywords": ["confirmed", "François", "3"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "multiple_date_options",
+      "task_type": "reservation",
+      "description": "Customer asks about multiple dates",
+      "turns": [
+        {
+          "user_input": "Do you have availability for 4 people either Friday or Saturday at 7pm?",
+          "expected_keywords": ["available", "Friday", "Saturday"]
+        },
+        {
+          "user_input": "Let's go with Friday. My name is Emma, phone 0698765432",
+          "expected_keywords": ["confirmed", "Friday"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 4
+      }
+    },
+    {
+      "name": "outdoor_seating_preference",
+      "task_type": "reservation",
+      "description": "Customer has seating preference",
+      "turns": [
+        {
+          "user_input": "I'd like an outdoor table for 2 on Sunday at noon. Name: Michel, phone: 0654987321",
+          "expected_keywords": ["outdoor", "confirmed", "Sunday"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "business_lunch_reservation",
+      "task_type": "reservation",
+      "description": "Business lunch booking",
+      "turns": [
+        {
+          "user_input": "I need a quiet table for a business meeting, 3 people, Monday at 12:30. My name is Dr. Martin, 0687123456",
+          "expected_keywords": ["confirmed", "Monday", "12:30"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 2
+      }
+    },
+    {
+      "name": "same_day_reservation",
+      "task_type": "reservation",
+      "description": "Last minute reservation for today",
+      "turns": [
+        {
+          "user_input": "Do you have anything available for tonight at 8pm? We're 2 people",
+          "expected_keywords": ["tonight", "available"]
+        },
+        {
+          "user_input": "Great! Book it please. I'm Julie, 0612349876",
+          "expected_keywords": ["confirmed", "Julie"]
+        }
+      ],
+      "success_criteria": {
+        "required_keywords": ["confirmed"],
+        "max_turns": 3
+      }
+    }
+  ],
+  "context_retention_scenarios": [
+    {
+      "name": "remember_party_size",
+      "setup_turns": [
+        {"user_input": "I want to book for 5 people"}
+      ],
+      "test_turns": [
+        {
+          "user_input": "What about tomorrow at 7pm?",
+          "context_reference": "5"
+        }
+      ]
+    },
+    {
+      "name": "remember_customer_name",
+      "setup_turns": [
+        {"user_input": "My name is Catherine and I want to make a reservation"}
+      ],
+      "test_turns": [
+        {
+          "user_input": "For 4 people tomorrow at 8pm please",
+          "context_reference": "Catherine"
+        }
+      ]
+    }
+  ]
+}
+

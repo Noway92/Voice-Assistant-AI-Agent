@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "name": "general_queries_test_data",
+    "description": "Test cases for general inquiries agent evaluation",
+    "version": "1.0",
+    "total_cases": 30
+  },
+  "test_cases": [
+    {
+      "input": "What are your opening hours?",
+      "expected_topic": "opening_hours",
+      "expected_keywords": ["11:30", "22:30", "open", "close"]
+    },
+    {
+      "input": "When do you close on Sundays?",
+      "expected_topic": "opening_hours",
+      "expected_keywords": ["Sunday", "21:00", "close"]
+    },
+    {
+      "input": "Are you open on weekends?",
+      "expected_topic": "opening_hours",
+      "expected_keywords": ["Saturday", "Sunday", "open"]
+    },
+    {
+      "input": "What's your last seating time?",
+      "expected_topic": "opening_hours",
+      "expected_keywords": ["30 minutes", "before", "closing"]
+    },
+    {
+      "input": "Are you closed on any holidays?",
+      "expected_topic": "opening_hours",
+      "expected_keywords": ["Christmas", "closed"]
+    },
+    {
+      "input": "Where is the restaurant located?",
+      "expected_topic": "location",
+      "expected_keywords": ["12", "Rue", "République", "Paris"]
+    },
+    {
+      "input": "What's your address?",
+      "expected_topic": "location",
+      "expected_keywords": ["12", "Rue", "République", "75001"]
+    },
+    {
+      "input": "How do I get to the restaurant?",
+      "expected_topic": "location",
+      "expected_keywords": ["Metro", "République", "walk"]
+    },
+    {
+      "input": "Is there parking nearby?",
+      "expected_topic": "location",
+      "expected_keywords": ["parking", "République", "underground"]
+    },
+    {
+      "input": "What metro station is closest?",
+      "expected_topic": "location",
+      "expected_keywords": ["Metro", "line", "République"]
+    },
+    {
+      "input": "What's your phone number?",
+      "expected_topic": "contact",
+      "expected_keywords": ["+33", "1", "23", "45", "67", "89"]
+    },
+    {
+      "input": "How can I contact you?",
+      "expected_topic": "contact",
+      "expected_keywords": ["phone", "email", "contact"]
+    },
+    {
+      "input": "What's your email address?",
+      "expected_topic": "contact",
+      "expected_keywords": ["contact@restaurant", "email"]
+    },
+    {
+      "input": "Do you have an Instagram account?",
+      "expected_topic": "contact",
+      "expected_keywords": ["instagram", "@restaurant"]
+    },
+    {
+      "input": "What payment methods do you accept?",
+      "expected_topic": "payment",
+      "expected_keywords": ["credit card", "cash", "Visa", "Mastercard"]
+    },
+    {
+      "input": "Can I pay with PayPal?",
+      "expected_topic": "payment",
+      "expected_keywords": ["PayPal", "online", "payment"]
+    },
+    {
+      "input": "Do you accept American Express?",
+      "expected_topic": "payment",
+      "expected_keywords": ["American Express", "accept"]
+    },
+    {
+      "input": "Do you offer delivery?",
+      "expected_topic": "delivery",
+      "expected_keywords": ["delivery", "available", "yes"]
+    },
+    {
+      "input": "What's the minimum order for delivery?",
+      "expected_topic": "delivery",
+      "expected_keywords": ["10", "minimum", "order"]
+    },
+    {
+      "input": "Is there a delivery fee?",
+      "expected_topic": "delivery",
+      "expected_keywords": ["free", "25", "fee", "2.99"]
+    },
+    {
+      "input": "Do you have a terrace?",
+      "expected_topic": "atmosphere",
+      "expected_keywords": ["terrace", "40", "outdoor", "seating"]
+    },
+    {
+      "input": "Is there wifi available?",
+      "expected_topic": "atmosphere",
+      "expected_keywords": ["wifi", "yes", "available"]
+    },
+    {
+      "input": "Is the restaurant wheelchair accessible?",
+      "expected_topic": "accessibility",
+      "expected_keywords": ["wheelchair", "accessible", "yes"]
+    },
+    {
+      "input": "Do you accept pets?",
+      "expected_topic": "faq",
+      "expected_keywords": ["dogs", "terrace", "pets", "allowed"]
+    },
+    {
+      "input": "Tell me about your happy hour",
+      "expected_topic": "special_offers",
+      "expected_keywords": ["Happy Hour", "cocktails", "30%", "17:00", "19:00"]
+    },
+    {
+      "input": "Do you have any special offers?",
+      "expected_topic": "special_offers",
+      "expected_keywords": ["Happy Hour", "Lunch Menu", "offer"]
+    },
+    {
+      "input": "What's your loyalty program?",
+      "expected_topic": "special_offers",
+      "expected_keywords": ["loyalty", "10th", "visit", "10%"]
+    },
+    {
+      "input": "What's the atmosphere like?",
+      "expected_topic": "atmosphere",
+      "expected_keywords": ["Modern", "Parisian", "bistro", "friendly"]
+    },
+    {
+      "input": "How do I report an allergy?",
+      "expected_topic": "allergies",
+      "expected_keywords": ["allergy", "report", "ordering", "chefs"]
+    },
+    {
+      "input": "Can I book for a birthday party?",
+      "expected_topic": "faq",
+      "expected_keywords": ["birthday", "event", "contact", "organize"]
+    }
+  ],
+  "rag_test_cases": [
+    {
+      "query": "What are your opening hours?",
+      "relevant_doc_ids": ["opening_hours"],
+      "filter_type": "opening_hours"
+    },
+    {
+      "query": "Where is the restaurant located?",
+      "relevant_doc_ids": ["location"],
+      "filter_type": "location"
+    },
+    {
+      "query": "Do you have any special offers?",
+      "relevant_doc_ids": ["offer_0", "offer_1", "offer_2"],
+      "filter_type": "special_offer"
+    },
+    {
+      "query": "How do you handle food allergies?",
+      "relevant_doc_ids": ["allergies"],
+      "filter_type": "allergies"
+    },
+    {
+      "query": "Do you accept pets?",
+      "relevant_doc_ids": ["faq_0"],
+      "filter_type": "faq"
+    },
+    {
+      "query": "Is the restaurant accessible?",
+      "relevant_doc_ids": ["accessibility"],
+      "filter_type": "accessibility"
+    }
+  ]
+}
+
