@@ -12,8 +12,8 @@ import os
 # Add parent directory to path to allow imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from agents.database.db_config import engine, init_db, test_connection, SessionLocal
-from agents.database.database import Client, Reservation, Table, MenuItem, Order, OrderItem
+from database.db_config import engine, init_db, test_connection, SessionLocal
+from database.database import Client, Reservation, Table, MenuItem, Order, OrderItem
 
 
 def create_initial_tables():
