@@ -15,7 +15,7 @@ from core.orchestrator import Orchestrator
 class VoiceAssistant:
     def __init__(self, isOffline=True):
         """Initialize the voice assistant with all components."""
-        self.stt = SpeechToText()
+        self.stt = SpeechToText(isOffline=isOffline)
         self.tts = TextToSpeech(isOffline=isOffline)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
@@ -37,7 +37,7 @@ class VoiceAssistant:
         english_input, original_lang = self.language_processor.process_input(user_input)
         print(f"[Language] Detected: {original_lang} | Translated: {english_input}")
 
-        # Check for exit commands
+       # Check for exit commands
         exit_words = ['exit', 'quit', 'stop', 'bye']
         if any(word in english_input.lower() for word in exit_words):
             self.speak("Goodbye! Au revoir!")
@@ -73,7 +73,7 @@ class VoiceAssistant:
     def run(self):
         """Run the voice assistant in interactive mode."""
         print("\n" + "="*60)
-        print("🎤 Voice Assistant Ready!")
+        print("Voice Assistant Ready!")
         print("Say 'exit' or 'quit' to stop")
         print("="*60 + "\n")
         

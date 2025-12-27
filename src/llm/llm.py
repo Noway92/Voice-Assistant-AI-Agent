@@ -19,7 +19,7 @@ def llm_online(input_text: str, client: OpenAI = None):
     if client is None:
         client = OpenAI(api_key=os.environ["API_KEY_OPENAI"])
     
-    response = client.responses.create(model="gpt-5",input=input_text)
+    response = client.responses.create(model="gpt-4o-mini",input=input_text)
     print(response.output_text)
 
 #llm_online("Bonjour, tu vas bien ?")
