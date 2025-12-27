@@ -7,16 +7,16 @@ from typing import List, Dict
 sys.path.append(str(Path(__file__).parent / "src"))
 
 # MAJ de ces fichiers pour créer des classes
-from audio.speech_to_text import SpeechToText
-from audio.text_to_speech import TextToSpeech
-from core.traductor import LanguageProcessor
-from core.orchestrator import Orchestrator
+from src.audio.speech_to_text import SpeechToText
+from src.audio.text_to_speech import TextToSpeech
+from src.core.traductor import LanguageProcessor
+from src.core.orchestrator import Orchestrator
 
 class VoiceAssistant:
     def __init__(self, isOffline=True):
         """Initialize the voice assistant with all components."""
         self.stt = SpeechToText(isOffline=isOffline)
-        self.tts = TextToSpeech(isOffline=isOffline)
+        self.tts = TextToSpeech(isOffline=isOffline,UsePhone=False)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
 
@@ -37,7 +37,7 @@ class VoiceAssistant:
         english_input, original_lang = self.language_processor.process_input(user_input)
         print(f"[Language] Detected: {original_lang} | Translated: {english_input}")
 
-       # Check for exit commands
+        # Check for exit commands
         exit_words = ['exit', 'quit', 'stop', 'bye']
         if any(word in english_input.lower() for word in exit_words):
             self.speak("Goodbye! Au revoir!")

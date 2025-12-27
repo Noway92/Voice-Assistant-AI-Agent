@@ -18,7 +18,7 @@ class PhoneMain:
         """Initialise le gestionnaire d'appels."""
         self.audio_adapter = AudioAdapter(isOffline=False) # Utiliser le STT en ligne
         self.orchestrator = Orchestrator(isOffline=False) # Utiliser LLM en ligne
-        self.tts = TextToSpeech(isOffline=False)  # Utiliser le TTS en ligne
+        self.tts = TextToSpeech(isOffline=False,UsePhone=False)  # Utiliser le TTS en ligne
         self.language_processor = LanguageProcessor()
         self.active_calls: Dict[str, Dict[str, Any]] = {}
     
