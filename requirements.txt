@@ -15,7 +15,7 @@ sounddevice==0.5.3
 soundfile==0.13.1
 SpeechRecognition==3.14.3
 pyttsx3==2.99
-vosk==0.3.45
+vosk==0.3.44
 
 # Phone & SMS
 twilio==9.8.8
@@ -24,6 +24,7 @@ flask==3.1.2
 # Database
 SQLAlchemy==2.0.44
 psycopg2-binary==2.9.11
+chromadb==1.1.1
 
 # Jupyter & Notebooks
 jupyterlab==4.4.10

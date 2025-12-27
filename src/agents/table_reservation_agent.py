@@ -4,7 +4,7 @@ from langchain_ollama import OllamaLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import create_react_agent, Tool,AgentExecutor
 from langchain_core.prompts import PromptTemplate
-from .tools.reservation_tools_sql import (
+from .tools.reservation_tools import (
     check_availability_tool,
     make_reservation_tool,
     cancel_reservation_tool,

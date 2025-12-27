@@ -9,7 +9,7 @@ import os
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from agents.tools.reservation_tools_sql import ReservationToolsSQL
+from agents.tools.reservation_tools import ReservationToolsSQL
 
 
 def test_reservation_system():

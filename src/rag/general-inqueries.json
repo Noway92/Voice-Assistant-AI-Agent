@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "language": "en",
+    "version": "1.1",
+    "description": "RAG base: general information for the restaurant voice assistant."
+  },
+  "general_inquiries": {
+    "location": {
+      "address": "12 Rue de la République, 75001 Paris, France",
+      "coordinates": {
+        "latitude": 48.8566,
+        "longitude": 2.3522
+      },
+      "directions_brief": "Metro line 1, République station a 3-minute walk.",
+      "parking": {
+        "nearby": "République underground parking 100m away (rate: €2/hour)",
+        "street_parking": "Limited blue zone street parking, check with the city hall"
+      }
+    },
+    "opening_hours": {
+      "monday": "11:30-22:30",
+      "tuesday": "11:30-22:30",
+      "wednesday": "11:30-22:30",
+      "thursday": "11:30-22:30",
+      "friday": "11:30-23:00",
+      "saturday": "12:00-23:00",
+      "sunday": "12:00-21:00",
+      "notes": "Kitchen open until 22:00 on weekdays, 22:30 on weekends.",
+      "closed_dates": ["25/12", "01/01", "01/05"],
+      "last_seating": "30 minutes before closing"
+    },
+    "contact": {
+      "phone": "+33 1 23 45 67 89",
+      "email": "contact@restaurant-exemple.fr",
+      "website": "https://www.restaurant-exemple.fr",
+      "social_media": {
+        "instagram": "@restaurant_exemple",
+        "facebook": "Restaurant Exemple"
+      }
+    },
+    "reservation_policy": {
+      "how_to_reserve": "Reserve by phone, website or via the voice assistant.",
+      "required_info": ["name", "date", "time", "number of guests", "phone number"],
+      "deposit": "No deposit required for standard reservations. Deposit may be required for groups > 8 people.",
+      "cancellation": "Cancellations accepted up to 24 hours before the reservation free of charge.",
+      "no_show_policy": "No penalty for no-shows, but please notify us if possible.",
+      "max_capacity": 120,
+      "group_min_persons": 8,
+      "advance_notice": "Reservations recommended on weekends, accepted up to 2 months in advance"
+    },
+    "delivery_and_takeaway": {
+      "available": true,
+      "delivery_partners": ["SuperLivraison", "QuickEat"],
+      "min_order_eur": 10.0,
+      "delivery_hours": "11:30-21:30",
+      "delivery_fee": "Free for orders > €25, otherwise €2.99",
+      "takeaway_instructions": "Specify pickup time when ordering.",
+      "takeaway_hours": "11:30-21:30",
+      "estimated_prep_time_minutes": 15
+    },
+    "payment_methods": {
+      "in_restaurant": ["credit card", "cash", "check", "mobile payment"],
+      "online": ["credit card", "PayPal"],
+      "accepted_cards": ["Visa", "Mastercard", "American Express"]
+    },
+    "atmosphere": {
+      "style": "Modern Parisian bistro",
+      "capacity": 120,
+      "indoor_seating": 80,
+      "outdoor_seating": 40,
+      "noise_level": "Friendly atmosphere, not very noisy",
+      "wifi": true,
+      "music": "Soft background music"
+    },
+    "accessibility": {
+      "wheelchair_access": true,
+      "accessible_toilet": true,
+      "disabled_parking": "Nearby (accessible parking)"
+    },
+    "faqs": [
+      {
+        "question": "Do you accept pets?",
+        "answer": "Small dogs are allowed on the terrace. Pets are not allowed inside."
+      },
+      {
+        "question": "Do you offer children's menus?",
+        "answer": "Yes, we offer a children's menu (smaller portion) priced at €7.50."
+      },
+      {
+        "question": "Do you offer gluten-free dishes?",
+        "answer": "We offer gluten-free options; please report any allergies when ordering."
+      },
+      {
+        "question": "Can I reserve for a birthday or special event?",
+        "answer": "Yes, contact us at +33 1 23 45 67 89 to organize a private event."
+      },
+      {
+        "question": "Do you offer vegetarian or vegan menus?",
+        "answer": "We have several vegetarian options. Vegan dishes are available on request."
+      },
+      {
+        "question": "Do you have a terrace?",
+        "answer": "Yes, we have a 40-seat terrace. Reservation recommended during high season."
+      }
+    ],
+    "special_offers": [
+      {
+        "title": "Happy Hour",
+        "description": "Cocktails 30% off every day from 17:00 to 19:00.",
+        "days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        "valid_hours": "17:00-19:00",
+        "applicable_items": ["cocktails"]
+      },
+      {
+        "title": "Lunch Menu",
+        "description": "2-course set €12.50 or 3-course set €15.50.",
+        "days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        "valid_hours": "12:00-14:30",
+        "applicable_items": ["full menu"]
+      },
+      {
+        "title": "Loyalty Program",
+        "description": "Every 10th visit: complimentary aperitif or 10% off the bill.",
+        "type": "loyalty_program"
+      }
+    ],
+    "dietary_restrictions": [
+      "gluten_free",
+      "vegetarian",
+      "vegan",
+      "halal",
+      "kosher",
+      "nut_free",
+      "lactose_free"
+    ],
+    "allergies_handling": {
+      "policy": "Report any allergy when ordering. Our chefs can adapt dishes.",
+      "common_allergens": ["gluten", "peanuts", "tree nuts", "shellfish", "eggs", "milk", "mustard"],
+      "contact_for_concerns": "+33 1 23 45 67 89"
+    }
+  },
+  "communication_guidelines": {
+    "greeting": "Welcome! You have reached Restaurant Exemple. How can I help you?",
+    "closing": "Thank you for calling! See you soon at the restaurant.",
+    "when_busy": "We are currently busy. Please call back in a few minutes.",
+    "tone": "Professional, courteous and warm"
+  },
+  "metadata_for_rag": {
+    "source_type": "restaurant_general",
+    "last_updated": "2025-12-19",
+    "notes": "Reduced file containing only general information (menu managed separately).",
+    "version_history": "1.0 → 1.1: Added parking, payment, accessibility, communication guidelines"
+  }
+}
