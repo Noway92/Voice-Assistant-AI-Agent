@@ -41,7 +41,7 @@ class Orchestrator:
     def _classify_intent(self, user_input: str) -> str:
         """
         Classify user intent using the LLM.
-        Returns: 'general', 'order', 'reservation', or 'menu'
+        Returns: 'general', 'order', or 'reservation'
         """
         prompt = f"""You are a classifier for a restaurant. Analyze the customer's request and determine the category.
 

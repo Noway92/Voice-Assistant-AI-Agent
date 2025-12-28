@@ -14,19 +14,17 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 class AgentEvaluator:
     """
     Evaluates individual agent performance.
-    
+
     Supports evaluation of:
     - Reservation Agent: Tool call accuracy, parameter extraction
-    - Menu Agent: Information accuracy, allergen handling
-    - General Agent: FAQ matching, factual correctness
+    - General Agent: FAQ matching, factual correctness, menu information (merged with menu queries)
     - Order Agent: Order parsing, confirmation handling
     """
-    
+
     def __init__(self):
         """Initialize the agent evaluator."""
         self.results = {
             "reservation": [],
-            "menu": [],
             "general": [],
             "order": []
         }
@@ -115,59 +113,22 @@ class AgentEvaluator:
         ground_truth: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Evaluate the menu information agent.
-        
+        Evaluate menu information queries.
+
+        DEPRECATED: Menu queries are now handled by GeneralInqueriesAgent.
+        This method now delegates to evaluate_general_agent for backward compatibility.
+
         Args:
-            agent: MenuInformationAgent instance
+            agent: GeneralInqueriesAgent instance
             test_cases: List of test queries with expected information
-            ground_truth: Optional menu data for accuracy checking
-            
+            ground_truth: Optional menu data for accuracy checking (unused)
+
         Returns:
-            Evaluation metrics for menu agent
+            Evaluation metrics for menu queries (handled by general agent)
         """
-        results = []
-        
-        for case in test_cases:
-            input_text = case.get("input", "")
-            expected_info = case.get("expected_info", {})
-            query_type = case.get("query_type", "general")  # price, allergen, ingredient, etc.
-            
-            try:
-                response = agent.process(input_text)
-                response_str = str(response) if response else ""
-                
-                # Check if expected information is present
-                info_correct = True
-                missing_info = []
-                
-                for key, expected_value in expected_info.items():
-                    if expected_value and str(expected_value).lower() not in response_str.lower():
-                        info_correct = False
-                        missing_info.append(key)
-                
-                result = {
-                    "input": input_text,
-                    "response": response_str,
-                    "query_type": query_type,
-                    "info_correct": info_correct,
-                    "missing_info": missing_info,
-                    "error": None
-                }
-                
-            except Exception as e:
-                result = {
-                    "input": input_text,
-                    "response": None,
-                    "query_type": query_type,
-                    "info_correct": False,
-                    "missing_info": list(expected_info.keys()),
-                    "error": str(e)
-                }
-            
-            results.append(result)
-        
-        self.results["menu"] = results
-        return self._compute_agent_metrics(results, "menu")
+        # Menu agent merged with general agent - delegate to general evaluation
+        print("  [Note: Menu queries now evaluated as part of GeneralInqueriesAgent]")
+        return self.evaluate_general_agent(agent, test_cases)
     
     def evaluate_general_agent(
         self,
@@ -356,18 +317,6 @@ class AgentEvaluator:
                 "results": results
             }
         
-        elif agent_type == "menu":
-            correct = sum(1 for r in results if r.get("info_correct", False))
-            errors = sum(1 for r in results if r.get("error"))
-            
-            return {
-                "agent_type": agent_type,
-                "total_tests": total,
-                "accuracy": correct / total,
-                "error_rate": errors / total,
-                "results": results
-            }
-        
         elif agent_type == "general":
             successes = sum(1 for r in results if r.get("success", False))
             avg_coverage = sum(r.get("keyword_coverage", 0) for r in results) / total
@@ -408,7 +357,6 @@ class AgentEvaluator:
         """Clear all accumulated results."""
         self.results = {
             "reservation": [],
-            "menu": [],
             "general": [],
             "order": []
         }

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "name": "menu_queries_test_data",
-    "description": "Test cases for menu information agent evaluation",
-    "version": "1.0",
+    "description": "Test cases for menu information queries (evaluated as part of GeneralInqueriesAgent)",
+    "version": "1.1",
     "total_cases": 40
   },
   "test_cases": [

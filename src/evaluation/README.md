@@ -82,16 +82,19 @@ metrics = evaluator.evaluate_batch(test_cases)
 
 ### Agent Evaluator
 
-Evaluates individual agents (reservation, menu, general, order):
+Evaluates individual agents (reservation, general, order):
+
+**Note**: Menu queries are now handled by the GeneralInqueriesAgent (merged).
 
 ```python
 from evaluation.evaluators.agent_evaluator import AgentEvaluator
 
 evaluator = AgentEvaluator()
 metrics = evaluator.evaluate_reservation_agent(reservation_agent, test_cases)
+metrics = evaluator.evaluate_general_agent(general_agent, test_cases)  # Handles both general + menu queries
 ```
 
-**Metrics**: Task success rate, parameter extraction rate, accuracy
+**Metrics**: Task success rate, parameter extraction rate, keyword coverage
 
 ### RAG Evaluator
 
@@ -175,13 +178,12 @@ INTENT CLASSIFICATION
 ----------------------------------------------------------------------
 Accuracy: 94.00%
 Macro F1: 0.9300
-Weakest class: 'menu' (F1=0.87)
+Weakest class: 'order' (F1=0.89)
 
 AGENT PERFORMANCE
 ----------------------------------------------------------------------
 Reservation: 87% task success, 92% param extraction
-Menu: 92% accuracy
-General: 95% success rate
+General: 95% success rate (includes menu queries)
 
 RAG RETRIEVAL
 ----------------------------------------------------------------------
@@ -198,7 +200,7 @@ Ragas Metrics:
 
 RECOMMENDATIONS
 ----------------------------------------------------------------------
-1. Intent class 'menu' has low F1-score (0.87). Add more examples for this class.
+1. Intent class 'order' has low F1-score (0.89). Add more examples for this class.
 2. RAG Precision@3 is 0.78. Review document chunking strategy.
 ...
 ```
