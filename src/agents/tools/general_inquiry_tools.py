@@ -220,6 +220,53 @@ class GeneralInquiryTools:
         except Exception as e:
             return f"Error retrieving dietary information: {str(e)}"
 
+    @staticmethod
+    def search_menu_items(query: str, n_results: int = 5) -> str:
+        """
+        Search for menu items from the database.
+
+        Args:
+            query: Search query about menu dishes (e.g., "vegetarian dishes", "desserts", "chicken")
+            n_results: Number of results to return (default: 5)
+
+        Returns:
+            String with formatted menu items
+        """
+        try:
+            manager = GeneralInquiryTools._get_manager()
+            results = manager.search(query, n_results=n_results, filter_type="menu_item")
+
+            if not results or len(results) == 0:
+                return "No menu items found matching your query."
+
+            formatted_items = []
+            for i, result in enumerate(results, 1):
+                if result.get('score', 0) > 0.5:
+                    text = result['text']
+                    metadata = result['metadata']
+                    
+                    # Extract key information from metadata
+                    name = metadata.get('name', 'Unknown')
+                    category = metadata.get('category', 'N/A')
+                    price = metadata.get('price', 'N/A')
+                    available = metadata.get('is_available', True)
+                    
+                    # Format the item
+                    availability = "Available" if available else "Not Available"
+                    formatted_items.append(
+                        f"{i}. {name} ({category}) - ${price}\n"
+                        f"   {availability}\n"
+                        f"   {text}"
+                    )
+
+            if not formatted_items:
+                return "No relevant menu items found."
+
+            return "\n\n".join(formatted_items)
+
+        except Exception as e:
+            return f"Error searching menu items: {str(e)}"
+
 
 # Tool functions for LangChain/agent integration
 def search_general_info_tool(query: str) -> str:
@@ -255,3 +302,9 @@ def search_special_offers_tool() -> str:
 def search_dietary_tool(query: str) -> str:
     """Search dietary and allergen information."""
     return GeneralInquiryTools.search_dietary_info(query)
+
+
+def search_menu_items_tool(query: str) -> str:
+    """Search for menu items from the database."""
+    return GeneralInquiryTools.search_menu_items(query, n_results=3)
+

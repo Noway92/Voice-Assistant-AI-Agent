@@ -376,8 +376,8 @@ class EmbeddingsManager:
                     formatted.append({
                         'text': results['documents'][0][i],
                         'metadata': results['metadatas'][0][i],
-                        'distance': results['distances'][0][i],
-                        'score': 1 - results['distances'][0][i]
+                        'distance': results['metadatas'][0][i],
+                        'score': 2-results['distances'][0][i]
                     })
             
             return formatted
@@ -424,9 +424,9 @@ def search_mode(manager: EmbeddingsManager):
                 
                 if results:
                     for i, result in enumerate(results, 1):
-                        print(f"\nRésultat {i} [{result['score']:.0%}]")
+                        print(f"\nRésultat {i} [{result['score']}]")
                         print(f"Type: {result['metadata'].get('type', 'N/A')}")
-                        print(f"Texte: {result['text']}...")
+                        print(f"Texte: {result['text']}")
                 else:
                     print("Aucun résultat trouvé")
         
@@ -448,7 +448,7 @@ def search_mode(manager: EmbeddingsManager):
                 
                 if results:
                     for i, result in enumerate(results, 1):
-                        print(f"\nRésultat {i} [{result['score']:.0%}]")
+                        print(f"\nRésultat {i} [{result['score']}]")
                         print(f"Texte: {result['text']}...")
                 else:
                     print("Aucun résultat trouvé")

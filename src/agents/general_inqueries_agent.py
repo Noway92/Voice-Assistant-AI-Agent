@@ -10,7 +10,8 @@ from .tools.general_inquiry_tools import (
     search_opening_hours_tool,
     search_contact_tool,
     search_special_offers_tool,
-    search_dietary_tool
+    search_dietary_tool,
+    search_menu_items_tool
 )
 
 
@@ -99,6 +100,18 @@ class GeneralInqueriesAgent:
                     "vegan, gluten-free, halal, kosher, or any dietary restrictions. "
                     "Input: the user's question about dietary needs as a string."
                 )
+            ),
+            Tool(
+                name="search_menu",
+                func=search_menu_items_tool,
+                description=(
+                    "Search for menu items and dishes from the restaurant database. "
+                    "Use this when asked about specific dishes, menu categories, "
+                    "what food is available, dish recommendations, prices, or ingredients. "
+                    "Examples: 'What vegetarian dishes do you have?', 'Show me desserts', "
+                    "'Do you have pasta?', 'What's on the menu?'. "
+                    "Input: the user's question about menu items as a string."
+                )
             )
         ]
 
@@ -129,24 +142,35 @@ IMPORTANT GUIDELINES:
 4. If asked about contact info → use get_contact
 5. If asked about offers/promotions → use get_special_offers
 6. If asked about dietary/allergies → use search_dietary_info
-7. If it seems like a common question → try search_faqs first
-8. For other general questions → use search_general_info
+7. If asked about menu items/dishes/food → use search_menu
+8. If it seems like a common question → try search_faqs first
+9. For other general questions → use search_general_info
 
-9. ALWAYS retrieve information using tools before answering
-10. Base your Final Answer ONLY on the information from the Observation
-11. If the Observation says "No relevant information found", be honest and suggest contacting the restaurant
-12. Be conversational, friendly, and professional in your Final Answer
-13. Respond in the same language as the customer (French or English)
-14. After using a tool and getting an Observation, go directly to Final Answer
+10. ALWAYS retrieve information using tools before answering
+11. Base your Final Answer ONLY on the information from the Observation
+12. If the Observation says "No relevant information found", be honest and suggest contacting the restaurant
+13. Be conversational, friendly, and professional in your Final Answer
+14. NEVER skip the "Thought:" after Observation
+15. If no tool has good information, STILL write "Final Answer:" and be honest
 
-EXAMPLE FLOW:
-Question: What are your opening hours?
-Thought: This is about opening hours, I should use the get_opening_hours tool.
-Action: get_opening_hours
-Action Input: opening hours
-Observation: [hours information from RAG]
-Thought: I have the opening hours information.
-Final Answer: [Friendly response with the hours]
+EXAMPLE - When tool finds nothing:
+Question: Do you have any moon pizza?
+Thought: This is about menu items, I should search the menu.
+Action: search_menu
+Action Input: moon pizza
+Observation: No menu items found matching your query.
+Thought: The tool found nothing. I should tell the customer honestly.
+Final Answer: I couldn't find a moon pizza on our menu. Would you like to check our other pizzas? Please feel free to call us for more options.
+
+EXAMPLE - When tool finds something:
+Question: What vegetarian dishes do you have?
+Thought: This is about menu items, I should search for vegetarian dishes.
+Action: search_menu
+Action Input: vegetarian dishes
+Observation: 1. Vegetable Stir Fry - $12.99, 2. Tofu Curry - $14.99
+Thought: Great! I have menu items. I can answer now.
+Final Answer: We have several vegetarian options including Vegetable Stir Fry ($12.99) and Tofu Curry ($14.99). Would you like more details?
+
 
 Question: {input}
 {agent_scratchpad}"""

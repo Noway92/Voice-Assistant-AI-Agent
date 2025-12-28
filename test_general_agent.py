@@ -25,6 +25,7 @@ def test_general_agent():
 
     # Test questions
     test_questions = [
+        "What do you have in your menu",
         "What are your opening hours?",
         "Where is the restaurant located?",
         "Do you accept pets?",
@@ -92,7 +93,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.interactive:
+    """if args.interactive:
         test_interactive()
-    else:
-        test_general_agent()
+    else:"""
+    test_general_agent()
