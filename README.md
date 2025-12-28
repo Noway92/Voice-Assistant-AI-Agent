@@ -15,25 +15,15 @@ Go in https://console.twilio.com/us1/develop/phone-numbers/manage/incoming
 Click on the number you want to use
 Copy the adress in "Voice Configuration" → "A CALL COMES IN"
 
-# IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
+## IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
 
-
-## Idées : 
-
-Agents : 
-- Quand on fait les prompts des agents on peut mettre des conditions sur le retour des tools : par exemple si le tool retourne "fin" ou "reservation réussit" on peut demander d'arreter d'utiliser l'agent
-- Agent Instructor (on peut mettre du early stopping, ...)
-
-Workflow : 
-- Faut il vérifié quand on renvoie au LLM final si on a bien répondu à la question ou pas ?
-
-Audio : 
-- Si le son n'est pas lu par le speak_offline : utiliser gTTS (dans tous les cas on attend la version de vianney)
 
 ## Reste à Faire : 
 
-Agent : 
-- Créer tous les agents avec les bonnes bases
+- Modif la branch evaluation 
+- Merge la branch vlb pour avoir l'agent order handling + la voix de vianney
+- Gérer le pb des 5 s dans le main.py
+- Peaufiner les prompts des différents agents
+- Créer le TTS online pour computer
+- Faire le streamlit
 
-Audio : 
-- Synthétiser la voix de Vianney pour la réponse vocal
