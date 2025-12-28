@@ -17,7 +17,7 @@ class SpeechToText:
         else:
             self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))
     
-    def record_audio(self, filename="static/enregistrement.mp3"):
+    def record_audio(self, filename="static/audioListened/enregistrement.mp3"):
         """Record audio from microphone."""
         print("Enregistrement...")
         audio = sd.rec(int(self.duration * self.samplerate), 

@@ -1,7 +1,5 @@
 # Environnements virtuels locaux
 python_env_voice_assistant/
-python_env_3.10/
-python_env_3.13/
 
 # Python
 __pycache__/

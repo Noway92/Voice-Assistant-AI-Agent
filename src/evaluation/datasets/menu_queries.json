@@ -1,0 +1,238 @@
+{
+  "metadata": {
+    "name": "menu_queries_test_data",
+    "description": "Test cases for menu information agent evaluation",
+    "version": "1.0",
+    "total_cases": 40
+  },
+  "test_cases": [
+    {
+      "input": "Is the Caesar salad gluten-free?",
+      "query_type": "allergen",
+      "expected_info": {"dish": "Caesar salad", "allergen_type": "gluten"}
+    },
+    {
+      "input": "Does the pasta contain nuts?",
+      "query_type": "allergen",
+      "expected_info": {"dish": "pasta", "allergen_type": "nuts"}
+    },
+    {
+      "input": "What allergens are in the burger?",
+      "query_type": "allergen",
+      "expected_info": {"dish": "burger"}
+    },
+    {
+      "input": "Is there dairy in the soup?",
+      "query_type": "allergen",
+      "expected_info": {"allergen_type": "dairy"}
+    },
+    {
+      "input": "Can you tell me about shellfish in your dishes?",
+      "query_type": "allergen",
+      "expected_info": {"allergen_type": "shellfish"}
+    },
+    {
+      "input": "How much is the steak?",
+      "query_type": "price",
+      "expected_info": {"dish": "steak"}
+    },
+    {
+      "input": "What's the price of the lunch menu?",
+      "query_type": "price",
+      "expected_info": {"menu_type": "lunch"}
+    },
+    {
+      "input": "How much does the wine cost?",
+      "query_type": "price",
+      "expected_info": {"item": "wine"}
+    },
+    {
+      "input": "What are your most expensive dishes?",
+      "query_type": "price",
+      "expected_info": {}
+    },
+    {
+      "input": "Do you have anything under 15 euros?",
+      "query_type": "price",
+      "expected_info": {"price_range": "under 15"}
+    },
+    {
+      "input": "What are the ingredients in the chef's special?",
+      "query_type": "ingredient",
+      "expected_info": {"dish": "chef's special"}
+    },
+    {
+      "input": "What's in the house salad?",
+      "query_type": "ingredient",
+      "expected_info": {"dish": "house salad"}
+    },
+    {
+      "input": "Does the risotto have mushrooms?",
+      "query_type": "ingredient",
+      "expected_info": {"dish": "risotto", "ingredient": "mushrooms"}
+    },
+    {
+      "input": "What vegetables come with the fish?",
+      "query_type": "ingredient",
+      "expected_info": {"dish": "fish"}
+    },
+    {
+      "input": "Is there garlic in the bread?",
+      "query_type": "ingredient",
+      "expected_info": {"dish": "bread", "ingredient": "garlic"}
+    },
+    {
+      "input": "Do you have vegetarian options?",
+      "query_type": "dietary",
+      "expected_info": {"dietary_type": "vegetarian"}
+    },
+    {
+      "input": "What vegan dishes do you serve?",
+      "query_type": "dietary",
+      "expected_info": {"dietary_type": "vegan"}
+    },
+    {
+      "input": "Are there halal options?",
+      "query_type": "dietary",
+      "expected_info": {"dietary_type": "halal"}
+    },
+    {
+      "input": "Do you have kosher food?",
+      "query_type": "dietary",
+      "expected_info": {"dietary_type": "kosher"}
+    },
+    {
+      "input": "What can I eat if I'm lactose intolerant?",
+      "query_type": "dietary",
+      "expected_info": {"dietary_type": "lactose-free"}
+    },
+    {
+      "input": "What desserts do you have?",
+      "query_type": "category",
+      "expected_info": {"category": "dessert"}
+    },
+    {
+      "input": "Tell me about your appetizers",
+      "query_type": "category",
+      "expected_info": {"category": "appetizer"}
+    },
+    {
+      "input": "What main courses do you recommend?",
+      "query_type": "category",
+      "expected_info": {"category": "main"}
+    },
+    {
+      "input": "What drinks do you offer?",
+      "query_type": "category",
+      "expected_info": {"category": "drink"}
+    },
+    {
+      "input": "Show me your wine list",
+      "query_type": "category",
+      "expected_info": {"category": "wine"}
+    },
+    {
+      "input": "What's your most popular dish?",
+      "query_type": "recommendation",
+      "expected_info": {}
+    },
+    {
+      "input": "What do you recommend for a first visit?",
+      "query_type": "recommendation",
+      "expected_info": {}
+    },
+    {
+      "input": "What's the chef's recommendation?",
+      "query_type": "recommendation",
+      "expected_info": {}
+    },
+    {
+      "input": "What pairs well with red wine?",
+      "query_type": "recommendation",
+      "expected_info": {"pairing": "red wine"}
+    },
+    {
+      "input": "What should I order for a special occasion?",
+      "query_type": "recommendation",
+      "expected_info": {}
+    },
+    {
+      "input": "Do you have a children's menu?",
+      "query_type": "menu_type",
+      "expected_info": {"menu_type": "children"}
+    },
+    {
+      "input": "What's on the lunch special?",
+      "query_type": "menu_type",
+      "expected_info": {"menu_type": "lunch"}
+    },
+    {
+      "input": "Is there a tasting menu?",
+      "query_type": "menu_type",
+      "expected_info": {"menu_type": "tasting"}
+    },
+    {
+      "input": "Do you have a prix fixe menu?",
+      "query_type": "menu_type",
+      "expected_info": {"menu_type": "prix fixe"}
+    },
+    {
+      "input": "Is the salmon fresh or frozen?",
+      "query_type": "quality",
+      "expected_info": {"dish": "salmon", "quality_aspect": "freshness"}
+    },
+    {
+      "input": "Quels sont les allergènes dans le plat du jour?",
+      "query_type": "allergen",
+      "expected_info": {"dish": "plat du jour"},
+      "language": "fr"
+    },
+    {
+      "input": "Avez-vous des options végétariennes?",
+      "query_type": "dietary",
+      "expected_info": {"dietary_type": "vegetarian"},
+      "language": "fr"
+    },
+    {
+      "input": "Combien coûte le menu enfant?",
+      "query_type": "price",
+      "expected_info": {"menu_type": "children"},
+      "language": "fr"
+    },
+    {
+      "input": "Que recommandez-vous?",
+      "query_type": "recommendation",
+      "expected_info": {},
+      "language": "fr"
+    },
+    {
+      "input": "Le risotto contient-il des champignons?",
+      "query_type": "ingredient",
+      "expected_info": {"dish": "risotto", "ingredient": "champignons"},
+      "language": "fr"
+    }
+  ],
+  "rag_test_cases": [
+    {
+      "query": "What vegetarian options do you have?",
+      "relevant_doc_ids": ["dietary", "menu_item_vegetarian"],
+      "filter_type": null
+    },
+    {
+      "query": "Do you serve gluten-free dishes?",
+      "relevant_doc_ids": ["dietary", "allergies"],
+      "filter_type": null
+    },
+    {
+      "query": "What's included in the lunch menu?",
+      "relevant_doc_ids": ["offer_1", "menu_item"],
+      "filter_type": "special_offer"
+    },
+    {
+      "query": "How do you handle food allergies?",
+      "relevant_doc_ids": ["allergies"],
+      "filter_type": null
+    }
+  ]
+}
+
