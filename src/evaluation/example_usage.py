@@ -39,7 +39,7 @@ def main():
         # Note: Requires ChromaDB connection and .env configuration
         try:
             embeddings_manager = EmbeddingsManager(
-                json_path="general-inqueries.json",
+                json_path="../rag/general-inqueries.json",
                 collection_name="restaurant_knowledge"
             )
         except Exception as e:
