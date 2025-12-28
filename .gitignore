@@ -11,3 +11,6 @@ __pycache__/
 
 # audio
 static/
+
+# IDE
+.idea/

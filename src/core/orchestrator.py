@@ -15,7 +15,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.general_inqueries_agent import GeneralInqueriesAgent
 from agents.order_handling_agent import OrderHandlingAgent
 from agents.table_reservation_agent import TableReservationAgent
-from agents.menu_information_agent import MenuInformationAgent
 
 
 class Orchestrator:
@@ -38,7 +37,6 @@ class Orchestrator:
         self.general_agent = GeneralInqueriesAgent(isOffline)
         self.order_agent = OrderHandlingAgent(isOffline)
         self.reservation_agent = TableReservationAgent(isOffline)
-        self.menu_agent = MenuInformationAgent(isOffline)
         
     def _classify_intent(self, user_input: str) -> str:
         """
@@ -49,14 +47,13 @@ class Orchestrator:
 
 
             Available categories:
-            - general: General questions (opening hours, location, contact, special offers)
+            - general: General questions (opening hours, location, contact, special offers, menu information, ingredients, allergens, prices, dietary restrictions)
             - order: Food orders (placing an order, modifying an order, canceling, order status)
             - reservation: Table reservations (book, modify, cancel, availability)
-            - menu: Specific questions about the menu (ingredients, allergens, prices, dish promotions)
 
             Customer request: {user_input}
 
-            Respond ONLY with a single word from: general, order, reservation, menu"""
+            Respond ONLY with a single word from: general, order, reservation"""
         try:
             llm_response = self.llm.invoke(prompt)
             
@@ -73,8 +70,6 @@ class Orchestrator:
                 return "order"
             elif "reservation" in response:
                 return "reservation"
-            elif "menu" in response:
-                return "menu"
             else:
                 # Default to general if unclear
                 return "general"
@@ -138,8 +133,6 @@ class Orchestrator:
                 response = self.order_agent.process(user_input)
             elif intent == "reservation":
                 response = self.reservation_agent.process(user_input)
-            elif intent == "menu":
-                response = self.menu_agent.process(user_input)
             else:
                 response = "I am sorry, I didn't understand your question"
             
