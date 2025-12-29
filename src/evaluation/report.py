@@ -83,9 +83,6 @@ class ReportGenerator:
                             success_rate = agent_result.get("task_success_rate", 0)
                             param_rate = agent_result.get("param_extraction_rate", 0)
                             lines.append(f"Reservation: {success_rate:.0%} task success, {param_rate:.0%} param extraction")
-                        elif agent_type == "menu":
-                            accuracy = agent_result.get("accuracy", 0)
-                            lines.append(f"Menu: {accuracy:.0%} accuracy")
                         elif agent_type == "general":
                             success_rate = agent_result.get("success_rate", 0)
                             lines.append(f"General: {success_rate:.0%} success rate")
@@ -235,13 +232,6 @@ class ReportGenerator:
                                     "Review tool call logic and parameter extraction."
                                 )
                         
-                        elif agent_type == "menu":
-                            accuracy = agent_result.get("accuracy", 1.0)
-                            if accuracy < 0.90:
-                                recommendations.append(
-                                    f"Menu agent accuracy is {accuracy:.0%}. "
-                                    "Improve RAG integration or menu data quality."
-                                )
         
         # RAG recommendations
         if "rag" in self.results:

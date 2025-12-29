@@ -23,7 +23,7 @@ class IntentEvaluator:
     - Confusion matrix to identify misclassification patterns
     """
     
-    INTENT_CLASSES = ["general", "order", "reservation", "menu"]
+    INTENT_CLASSES = ["general", "order", "reservation"]
     
     def __init__(self, orchestrator=None):
         """

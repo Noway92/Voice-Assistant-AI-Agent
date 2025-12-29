@@ -113,7 +113,6 @@ class EvaluationRunner:
         if agents is None:
             agents = {
                 "reservation": getattr(self.orchestrator, "reservation_agent", None),
-                "menu": getattr(self.orchestrator, "menu_agent", None),
                 "general": getattr(self.orchestrator, "general_agent", None),
                 "order": getattr(self.orchestrator, "order_agent", None)
             }
@@ -128,23 +127,22 @@ class EvaluationRunner:
             )
             agent_results["reservation"] = reservation_results
         
-        # Evaluate menu agent
-        if agents.get("menu"):
-            print("  - Menu agent...")
-            menu_dataset = self._load_test_dataset("menu_queries.json")
-            menu_results = self.agent_evaluator.evaluate_menu_agent(
-                agents["menu"],
-                menu_dataset.get("test_cases", [])[:10]  # Limit for speed
-            )
-            agent_results["menu"] = menu_results
-        
-        # Evaluate general agent
+        # Evaluate general agent (handles both general inquiries and menu queries)
         if agents.get("general"):
-            print("  - General agent...")
+            print("  - General agent (general + menu queries)...")
+            # Load both general and menu test cases
             general_dataset = self._load_test_dataset("general_queries.json")
+            menu_dataset = self._load_test_dataset("menu_queries.json")
+
+            # Merge test cases from both datasets
+            combined_test_cases = (
+                general_dataset.get("test_cases", [])[:10] +
+                menu_dataset.get("test_cases", [])[:10]
+            )
+
             general_results = self.agent_evaluator.evaluate_general_agent(
                 agents["general"],
-                general_dataset.get("test_cases", [])[:10]  # Limit for speed
+                combined_test_cases
             )
             agent_results["general"] = general_results
         
@@ -180,14 +178,14 @@ class EvaluationRunner:
         
         print("Evaluating RAG retrieval...")
         
-        # Load menu queries with RAG test cases
+        # Load RAG test cases from both menu and general queries
+        # (both are handled by the same GeneralInqueriesAgent)
         menu_dataset = self._load_test_dataset("menu_queries.json")
         rag_test_cases = menu_dataset.get("rag_test_cases", [])
-        
-        # Also load general queries RAG tests
+
         general_dataset = self._load_test_dataset("general_queries.json")
         general_rag_cases = general_dataset.get("rag_test_cases", [])
-        
+
         all_rag_cases = rag_test_cases + general_rag_cases
         
         # Standard retrieval metrics
