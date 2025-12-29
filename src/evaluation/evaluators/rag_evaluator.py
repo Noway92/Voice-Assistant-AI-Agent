@@ -106,15 +106,22 @@ class RAGEvaluator:
                 "relevant_ids": relevant_doc_ids
             }
         
-        # Extract retrieved document IDs
+        # Extract retrieved document IDs - use the ID field if available
         retrieved_ids = []
         retrieved_texts = []
         scores = []
         
         for result in search_results:
-            doc_id = result.get("metadata", {}).get("type", "") + "_" + str(
-                result.get("metadata", {}).get("item_id", result.get("metadata", {}).get("question", "unknown"))
-            )
+            # Try to get ID from result (if search() returns it)
+            # Otherwise reconstruct from metadata
+            if "id" in result:
+                doc_id = result["id"]
+            else:
+                # Fallback: reconstruct from metadata
+                doc_type = result.get("metadata", {}).get("type", "unknown")
+                item_id = result.get("metadata", {}).get("item_id", result.get("metadata", {}).get("question", "unknown"))
+                doc_id = f"{doc_type}_{item_id}" if item_id != "unknown" else doc_type
+            
             retrieved_ids.append(doc_id)
             retrieved_texts.append(result.get("text", ""))
             scores.append(result.get("score", 0))

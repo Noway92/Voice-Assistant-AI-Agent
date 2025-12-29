@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 # Add parent directories to path (project root)
-project_root = Path(__file__).parent.parent.parent.parent
+project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 sys.path.append(str(project_root / "src"))  # Also add src for module imports
 
@@ -46,7 +46,7 @@ def main():
             print(f"Warning: Could not initialize EmbeddingsManager: {e}")
             print("RAG evaluation will be skipped.")
             embeddings_manager = None
-        
+
         # Create evaluation runner
         runner = EvaluationRunner(
             orchestrator=orchestrator,
@@ -59,6 +59,7 @@ def main():
         print("\n" + "=" * 70)
         print("Running Full Evaluation Suite")
         print("=" * 70)
+        
         
         results = runner.run_full_evaluation(
             include_agents=True,

@@ -252,7 +252,7 @@ class EvaluationRunner:
             
             # Extract from agent results
             if "agents" in self.results:
-                for agent_type, agent_result in self.results["agents"].items():
+                for _ , agent_result in self.results["agents"].items():
                     if "results" in agent_result:
                         for r in agent_result["results"][:3]:  # Sample 3 per agent
                             if r.get("input") and r.get("response"):

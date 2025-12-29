@@ -1,0 +1,55 @@
+======================================================================
+EVALUATION REPORT
+======================================================================
+Generated: 2025-12-29T23:38:14.320921
+
+INTENT CLASSIFICATION
+----------------------------------------------------------------------
+Accuracy: 94.74%
+Macro F1: 0.9443
+Weakest class: 'order' (F1=0.92)
+
+Per-class metrics:
+  general: P=0.92 R=0.98 F1=0.95
+  order: P=0.95 R=0.90 F1=0.92
+  reservation: P=1.00 R=0.92 F1=0.96
+
+AGENT PERFORMANCE
+----------------------------------------------------------------------
+Reservation: 100% task success, 100% param extraction
+General: 95% success rate
+Order: 0% success rate
+
+RAG RETRIEVAL
+----------------------------------------------------------------------
+MRR: 0.0000
+Precision@3: 0.00
+Precision@5: 0.00
+
+Ragas: Ragas not available. Install with: pip install ragas
+
+END-TO-END TASK COMPLETION
+----------------------------------------------------------------------
+Success rate: 50.00%
+Avg turns to completion: 1.2
+Error recovery rate: 0.00%
+
+RESPONSE QUALITY (LLM Judge)
+----------------------------------------------------------------------
+Avg Score: 5.00/5 (±0.00)
+
+Per-criterion scores:
+  Relevance: 5.00/5
+  Accuracy: 5.00/5
+  Helpfulness: 5.00/5
+  Tone: 5.00/5
+
+Lowest: relevance (5.00)
+
+RECOMMENDATIONS
+----------------------------------------------------------------------
+1. RAG retrieval MRR is 0.00. Consider improving document embeddings or query formulation.
+2. RAG Precision@3 is 0.00. Review document chunking strategy or embedding model.
+3. End-to-end task success rate is 50%. Review conversation flow and error handling.
+
+======================================================================

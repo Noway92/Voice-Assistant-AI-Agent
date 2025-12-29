@@ -9,4 +9,4 @@ pip install -r requirements.txt # MAJ seulement les nouvelles dépendances
 # pip install -r requirements.txt
 
 
-pip freeze > requirements.txt # Pour faire une MAJ sur le requirements.txt depuis ton environnement
+#pip freeze > requirements.txt # Pour faire une MAJ sur le requirements.txt depuis ton environnement

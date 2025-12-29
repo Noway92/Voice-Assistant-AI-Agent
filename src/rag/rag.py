@@ -374,10 +374,11 @@ class EmbeddingsManager:
             if results['documents'] and len(results['documents']) > 0:
                 for i in range(len(results['documents'][0])):
                     formatted.append({
+                        'id': results['ids'][0][i],  # ADD THIS LINE
                         'text': results['documents'][0][i],
                         'metadata': results['metadatas'][0][i],
-                        'distance': results['metadatas'][0][i],
-                        'score': 2-results['distances'][0][i]
+                        'distance': results['distances'][0][i],
+                        'score': 2 - results['distances'][0][i]
                     })
             
             return formatted
