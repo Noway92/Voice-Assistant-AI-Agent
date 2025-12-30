@@ -15,19 +15,17 @@ from evaluation.evaluators.intent_evaluator import IntentEvaluator
 from evaluation.evaluators.agent_evaluator import AgentEvaluator
 from evaluation.evaluators.rag_evaluator import RAGEvaluator
 from evaluation.evaluators.e2e_evaluator import EndToEndEvaluator
-from evaluation.evaluators.quality_evaluator import QualityEvaluator
 
 
 class EvaluationRunner:
     """
     Main orchestrator for running comprehensive evaluations.
-    
+
     Coordinates:
     - Intent classification evaluation
     - Agent-level evaluation
     - RAG retrieval evaluation
     - End-to-end task evaluation
-    - Response quality evaluation
     """
     
     def __init__(
@@ -56,8 +54,7 @@ class EvaluationRunner:
         self.agent_evaluator = AgentEvaluator()
         self.rag_evaluator = RAGEvaluator(embeddings_manager)
         self.e2e_evaluator = EndToEndEvaluator(voice_assistant)
-        self.quality_evaluator = QualityEvaluator(use_offline=is_offline)
-        
+
         # Results storage
         self.results = {}
     
@@ -229,62 +226,21 @@ class EvaluationRunner:
         self.results["end_to_end"] = metrics
         
         return metrics
-    
-    def evaluate_response_quality(
-        self,
-        sample_responses: Optional[List[Dict[str, Any]]] = None
-    ) -> Dict[str, Any]:
-        """
-        Evaluate response quality using LLM-as-judge.
-        
-        Args:
-            sample_responses: Optional list of query-response pairs to evaluate
-                             If None, generates from agent responses
-        
-        Returns:
-            Quality evaluation metrics
-        """
-        print("Evaluating response quality...")
-        
-        if sample_responses is None:
-            # Generate sample responses from previous evaluations
-            sample_responses = []
-            
-            # Extract from agent results
-            if "agents" in self.results:
-                for _ , agent_result in self.results["agents"].items():
-                    if "results" in agent_result:
-                        for r in agent_result["results"][:3]:  # Sample 3 per agent
-                            if r.get("input") and r.get("response"):
-                                sample_responses.append({
-                                    "query": r["input"],
-                                    "response": r["response"]
-                                })
-        
-        if not sample_responses:
-            return {"error": "No sample responses provided"}
-        
-        metrics = self.quality_evaluator.evaluate_batch(sample_responses)
-        self.results["quality"] = metrics
-        
-        return metrics
-    
+
     def run_full_evaluation(
         self,
         include_agents: bool = True,
         include_rag: bool = True,
-        include_e2e: bool = True,
-        include_quality: bool = True
+        include_e2e: bool = True
     ) -> Dict[str, Any]:
         """
         Run a complete evaluation suite.
-        
+
         Args:
             include_agents: Whether to evaluate individual agents
             include_rag: Whether to evaluate RAG retrieval
             include_e2e: Whether to evaluate end-to-end tasks
-            include_quality: Whether to evaluate response quality
-        
+
         Returns:
             Complete evaluation results
         """
@@ -334,16 +290,7 @@ class EvaluationRunner:
             except Exception as e:
                 e2e_metrics = {"error": str(e)}
             self.results["end_to_end"] = e2e_metrics
-        
-        # Quality evaluation
-        if include_quality:
-            try:
-                quality_metrics = self.evaluate_response_quality()
-                self.results["configuration"]["evaluations_run"].append("quality")
-            except Exception as e:
-                quality_metrics = {"error": str(e)}
-            self.results["quality"] = quality_metrics
-        
+
         print("\n" + "=" * 70)
         print("EVALUATION COMPLETE")
         print("=" * 70)
@@ -361,5 +308,4 @@ class EvaluationRunner:
         self.agent_evaluator.clear_results()
         self.rag_evaluator.clear_results()
         self.e2e_evaluator.clear_results()
-        self.quality_evaluator.clear_results()
 
