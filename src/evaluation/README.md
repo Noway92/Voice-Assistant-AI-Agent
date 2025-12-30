@@ -10,7 +10,6 @@ The evaluation framework provides multi-layered assessment of the agentic system
 2. **Agent Performance** - Evaluates individual specialized agents
 3. **RAG Retrieval** - Measures ChromaDB document retrieval quality
 4. **End-to-End Tasks** - Complete conversation scenario evaluation
-5. **Response Quality** - LLM-as-judge quality assessment
 
 ## Quick Start
 
@@ -61,8 +60,7 @@ evaluation/
     ├── intent_evaluator.py
     ├── agent_evaluator.py
     ├── rag_evaluator.py
-    ├── e2e_evaluator.py
-    └── quality_evaluator.py
+    └── e2e_evaluator.py
 ```
 
 ## Evaluation Components
@@ -130,19 +128,6 @@ metrics = evaluator.evaluate_batch(scenarios)
 ```
 
 **Metrics**: Task success rate, average turns to completion, error recovery rate
-
-### Quality Evaluator
-
-Uses LLM-as-judge to assess response quality:
-
-```python
-from evaluation.evaluators.quality_evaluator import QualityEvaluator
-
-evaluator = QualityEvaluator(use_offline=False)
-metrics = evaluator.evaluate_batch(query_response_pairs)
-```
-
-**Metrics**: Relevance, Accuracy, Helpfulness, Tone (1-5 scale)
 
 ## Test Datasets
 
@@ -218,5 +203,4 @@ RECOMMENDATIONS
 - Set `is_offline=True` to use Ollama for evaluations (slower but no API costs)
 - RAG evaluation requires ChromaDB connection (configured via .env)
 - E2E evaluation resets conversation history between scenarios
-- Quality evaluation can work offline with heuristic fallback
 
