@@ -23,8 +23,6 @@ class TextToSpeech:
         else:
             self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))
         
-    
-    
     def speak_offline(self, text):
         """Use pyttsx3 for offline TTS."""
         print(f"[TTS Offline] Speaking: {text}\n\n")
@@ -32,7 +30,7 @@ class TextToSpeech:
         engine.setProperty("rate", 170)
         engine.say(text)
         engine.runAndWait()
-        time.sleep(0.5) # Pour que speak offline lise tout le temps
+        time.sleep(0.5)
     
     def speak_online_computer(self, text):
         """Use OpenAI API to speak directly on computer."""

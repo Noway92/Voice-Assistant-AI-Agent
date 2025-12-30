@@ -40,7 +40,8 @@ class VoiceAssistant:
         # Check for exit commands
         exit_words = ['exit', 'quit', 'stop', 'bye']
         if any(word in english_input.lower() for word in exit_words):
-            self.speak("Goodbye! Au revoir!")
+            reponse = self.language_processor.process_output("Goodbye!", original_lang)
+            self.speak(reponse)
             return False
         
         # 2. Process through orchestrator (intent classification + agent routing + conversation history)
