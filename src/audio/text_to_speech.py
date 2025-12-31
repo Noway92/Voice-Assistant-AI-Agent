@@ -2,8 +2,7 @@ import pyttsx3
 import os
 from openai import OpenAI
 import time
-
-import tempfile
+import winsound
 import subprocess
 import platform
 
@@ -40,20 +39,21 @@ class TextToSpeech:
             voice=self.voice,
             input=text
         )
+        output_path="static/audioListened/output_tts.mp3"
+        # Sauvegarder le fichier audio
+        with open(output_path, "wb") as f:
+            f.write(response.read())
         
-        # Lire directement depuis le buffer audio
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
-            tmp.write(response.read())
-            tmp_path = tmp.name
-        
-        # Lire le fichier temporaire (dépend de l'OS)
+        abs_path = os.path.abspath(output_path)
+        # Lire le fichier selon l'OS
         try:
             if platform.system() == "Darwin":  # macOS
-                subprocess.run(["afplay", tmp_path])                
-            else:  # Windows
-                os.startfile(tmp_path)
-        finally:
-            os.remove(tmp_path)
+                subprocess.run(["afplay", abs_path], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)                
+            elif platform.system() == "Windows":  # Windows
+                # Lire le fichier avec ffplay et attendre la fin
+                subprocess.run(["ffplay", "-nodisp", "-autoexit", abs_path], check=True)
+        except Exception as e:
+            print(f"Erreur lors de la lecture audio: {e}")
     
     def speak_online_phone(self, text, output_path="output_tts_online.mp3"):
         """Use OpenAI API for online TTS."""
@@ -77,12 +77,11 @@ class TextToSpeech:
             self.speak_online_phone(text,output_path)
         # Read directly for computer use
         else:
-            self.speak_offline(text)
+            #self.speak_offline(text)
             # Pour l'instant non fonctionnel donc on garde que le offline
-            """if self.use_offline :
+            if self.use_offline :
                 self.speak_offline(text)
-            
             else :
-               self.speak_online_computer(text)""" 
+               self.speak_online_computer(text)
             
         

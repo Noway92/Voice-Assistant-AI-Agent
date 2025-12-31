@@ -20,10 +20,7 @@ Copy the adress in "Voice Configuration" → "A CALL COMES IN"
 
 ## Reste à Faire : 
 
-- Modif la branch evaluation 
 - Merge la branch vlb pour avoir l'agent order handling + la voix de vianney
-- Gérer le pb des 5 s dans le main.py
 - Peaufiner les prompts des différents agents
-- Créer le TTS online pour computer
 - Faire le streamlit
 
