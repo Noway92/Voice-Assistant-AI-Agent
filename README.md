@@ -4,7 +4,10 @@
 
 # Environement
 The environement is for python 3.10
-If you want to use python 3.13, just use requirements_python3_13
+
+You need FFmpeg to run the program : 
+to install : choco install ffmpeg
+
 
 # Run code 
 python app.py

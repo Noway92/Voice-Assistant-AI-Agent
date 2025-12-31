@@ -47,11 +47,13 @@ class TextToSpeech:
         abs_path = os.path.abspath(output_path)
         # Lire le fichier selon l'OS
         try:
-            if platform.system() == "Darwin":  # macOS
-                subprocess.run(["afplay", abs_path], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)                
-            elif platform.system() == "Windows":  # Windows
-                # Lire le fichier avec ffplay et attendre la fin
-                subprocess.run(["ffplay", "-nodisp", "-autoexit", abs_path], check=True)
+            # Lire le fichier avec ffplay et attendre la fin
+            subprocess.run(
+                ["ffplay", "-nodisp", "-autoexit", abs_path],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True
+            )
         except Exception as e:
             print(f"Erreur lors de la lecture audio: {e}")
     
