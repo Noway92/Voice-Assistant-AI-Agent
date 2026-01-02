@@ -208,7 +208,7 @@ def generate_static_audio():
     os.makedirs(generated_dir, exist_ok=True)
     
     print("Génération des fichiers audio standards...")
-    tts = TextToSpeech(isOffline=False)
+    tts = TextToSpeech(isOffline=False,UsePhone=True,use_custom_xtts=False)
     
     messages = {
         'welcome.mp3': 'Bonjour, bienvenue au restaurant. Comment puis-je vous aider?',
@@ -220,7 +220,7 @@ def generate_static_audio():
         filepath = os.path.join(audio_dir, filename)
         if not os.path.exists(filepath):
             try:
-                tts.speak_online(text, output_path=filepath)
+                tts.speak(text, output_path=filepath,language="fr")
                 print(f"Généré: {filename}")
             except Exception as e:
                 print(f"Erreur pour {filename}: {e}")

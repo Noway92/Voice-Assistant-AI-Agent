@@ -18,7 +18,7 @@ class PhoneMain:
         """Initialise le gestionnaire d'appels."""
         self.audio_adapter = AudioAdapter(isOffline=False) # Utiliser le STT en ligne
         self.orchestrator = Orchestrator(isOffline=False) # Utiliser LLM en ligne
-        self.tts = TextToSpeech(isOffline=False,UsePhone=True)  # Utiliser le TTS en ligne
+        self.tts = TextToSpeech(isOffline=False,UsePhone=True,use_custom_xtts=False)  # Utiliser le TTS en ligne pour téléphone
         self.language_processor = LanguageProcessor()
         self.active_calls: Dict[str, Dict[str, Any]] = {}
     
@@ -140,7 +140,7 @@ class PhoneMain:
             audio_path = os.path.join(audio_dir, audio_filename)
             
             # Générer l'audio
-            self.tts.speak(agent_response, output_path=audio_path)
+            self.tts.speak(agent_response, output_path=audio_path,language=detected_lang)
             
             # Construire l'URL
             base_url = os.getenv('BASE_URL', f"http://{host}")

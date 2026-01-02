@@ -10,5 +10,9 @@ __pycache__/
 # audio
 static/
 
+# TTS model folder (large files)
+src/audio/tts/
+
 # IDE
 .idea/
+

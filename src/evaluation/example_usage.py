@@ -24,6 +24,8 @@ def main():
     
     # Configuration
     is_offline = False  # Set to True to use Ollama instead of OpenAI
+    UsePhone = False
+    use_custom_xtts = False
     
     print("Initializing Voice Assistant components...")
     
@@ -33,7 +35,7 @@ def main():
         orchestrator = Orchestrator(isOffline=is_offline)
         
         # Initialize voice assistant (for E2E tests)
-        voice_assistant = VoiceAssistant(isOffline=is_offline)
+        voice_assistant = VoiceAssistant(isOffline=is_offline,UsePhone=UsePhone,use_custom_xtts=use_custom_xtts)
         
         # Initialize embeddings manager (for RAG evaluation)
         # Note: Requires ChromaDB connection and .env configuration
@@ -64,8 +66,7 @@ def main():
         results = runner.run_full_evaluation(
             include_agents=True,
             include_rag=(embeddings_manager is not None),
-            include_e2e=True,
-            include_quality=True
+            include_e2e=True
         )
         
         # Generate report

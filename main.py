@@ -13,12 +13,13 @@ from src.core.traductor import LanguageProcessor
 from src.core.orchestrator import Orchestrator
 
 class VoiceAssistant:
-    def __init__(self, isOffline=True):
+    def __init__(self, isOffline=True,UsePhone=False,use_custom_xtts=False):
         """Initialize the voice assistant with all components."""
         self.stt = SpeechToText(isOffline=isOffline)
-        self.tts = TextToSpeech(isOffline=isOffline,UsePhone=False)
+        self.tts = TextToSpeech(isOffline=isOffline,UsePhone=UsePhone,use_custom_xtts=use_custom_xtts)
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
+        self.current_language = 'en'
 
         #Historique des conversations
         self.conversation_history: List[Dict[str, str]] = []
@@ -64,12 +65,13 @@ class VoiceAssistant:
         final_response = self.language_processor.process_output(english_response, original_lang)
         print(f"[Assistant] {final_response}")
         
-        return final_response
+        return final_response, original_lang
     
-    def speak(self, text: str):
+    def speak(self, text: str, language: str = None):
         """Convert text to speech."""
         print("[Speaking] ...")
-        self.tts.speak(text)
+        lang = language if language else self.current_language
+        self.tts.speak(text, language=lang)
     
     def run(self):
         """Run the voice assistant in interactive mode."""
@@ -89,13 +91,15 @@ class VoiceAssistant:
                     continue
 
                 # Step 2-3-4: Process (translate -> orchestrate -> translate back)
-                response = self.process(user_input)
+                result = self.process(user_input)
 
                 # Exit si il a demandé de partir
-                if not response : break
+                if not result : break
+
+                response, language = result
                 
                 # Step 5: Speak the response
-                self.speak(response)
+                self.speak(response, language=language)
                 
                 print("\n" + "-"*60 + "\n")
                 #stop = 1
@@ -113,8 +117,11 @@ class VoiceAssistant:
 def main():
     """Main entry point."""
     isOffline = False
+    UsePhone = False
+    use_custom_xtts = False
+
     
-    assistant = VoiceAssistant(isOffline=isOffline)
+    assistant = VoiceAssistant(isOffline=isOffline,UsePhone=UsePhone,use_custom_xtts=use_custom_xtts)
     assistant.run()
 
 if __name__ == "__main__":
