@@ -1,6 +1,6 @@
 """
-Script de gestion des embeddings ChromaDB.
-Crée et met à jour les embeddings à partir de general-inqueries.json et PostgreSQL
+ChromaDB embeddings management script.
+Creates and updates embeddings from general-inqueries.json and PostgreSQL
 """
 
 import sys
@@ -24,7 +24,7 @@ load_dotenv()
 
 
 class EmbeddingsManager:
-    """Gestionnaire simplifié des embeddings ChromaDB."""
+    """Simplified ChromaDB embeddings manager."""
     
     def __init__(
         self,
@@ -44,7 +44,7 @@ class EmbeddingsManager:
         chroma_user = os.getenv("CHROMA_USER")
         chroma_password = os.getenv("CHROMA_PASSWORD")
         
-        # Préparation des headers pour authentification
+        # Prepare headers for authentication
         headers = {}
         if chroma_user and chroma_password:
             import base64
@@ -74,7 +74,7 @@ class EmbeddingsManager:
         )
     
     def _load_json(self) -> Dict[str, Any]:
-        """Charge le fichier JSON."""
+        """Load the JSON file."""
         if not self.json_path.exists():
             raise FileNotFoundError(f"File not found: {self.json_path}")
         
@@ -82,17 +82,17 @@ class EmbeddingsManager:
             return json.load(f)
     
     def _dict_to_text(self, data: Dict, indent: int = 0) -> str:
-        """Convertit un dict en texte lisible (fonction générique)."""
+        """Convert a dict to readable text (generic function)."""
         lines = []
         for key, value in data.items():
             if value is None or (isinstance(value, (list, dict)) and not value):
                 continue
             
-            # Formater la clé (underscores → espaces, capitalize)
+            # Format the key (underscores → spaces, capitalize)
             formatted_key = key.replace('_', ' ').title()
             
             if isinstance(value, bool):
-                # Convertir booléen en texte
+                # Convert boolean to text
                 value = "Yes" if value else "No"
                 lines.append(f"{formatted_key}: {value}")
             
@@ -101,14 +101,14 @@ class EmbeddingsManager:
                 lines.append(f"{formatted_key}: {value}")
             
             elif isinstance(value, list):
-                # Listes
+                # Lists
                 if value and isinstance(value[0], str):
                     lines.append(f"{formatted_key}: {', '.join(value)}")
                 else:
                     lines.append(f"{formatted_key}: {value}")
             
             elif isinstance(value, dict):
-                # Dicts imbriqués (récursif)
+                # Nested dicts (recursive)
                 lines.append(f"{formatted_key}:")
                 nested_text = self._dict_to_text(value, indent + 1)
                 for line in nested_text.split('\n'):
@@ -118,12 +118,12 @@ class EmbeddingsManager:
         return '\n'.join(lines)
     
     def _prepare_documents(self) -> List[Dict[str, Any]]:
-        """Transforme le JSON en documents structurés."""
+        """Transform JSON into structured documents."""
         data = self._load_json()
         documents = []
         general = data.get('general_inquiries', {})
         
-        # Mapping de sections → ID et type
+        # Mapping of sections → ID and type
         sections = {
             'location': ('location', 'location'),
             'opening_hours': ('opening_hours', 'opening_hours'),
@@ -137,16 +137,16 @@ class EmbeddingsManager:
             'allergies_handling': ('allergies', 'allergies'),
         }
         
-        # Traiter les sections simples
+        # Process simple sections
         for key, (doc_id, doc_type) in sections.items():
             if key in general:
                 data_section = general[key]
                 
-                # Cas spécial: dietary_restrictions est une liste
+                # Special case: dietary_restrictions is a list
                 if key == 'dietary_restrictions' and isinstance(data_section, list):
                     text = f"Available dietary options: {', '.join(data_section)}"
                 else:
-                    # Convertir en texte lisible
+                    # Convert to readable text
                     text = self._dict_to_text(data_section)
                 
                 documents.append({
@@ -236,7 +236,7 @@ class EmbeddingsManager:
         return documents
     
     def create_embeddings(self, force_update: bool = False) -> Dict[str, int]:
-        """Crée les embeddings."""
+        """Create embeddings."""
         if force_update:
             print("Deleting existing collection...")
             try:
@@ -294,20 +294,20 @@ class EmbeddingsManager:
         }
     
     def update_embeddings(self) -> Dict[str, int]:
-        """Met à jour les embeddings SANS supprimer les existants."""
+        """Update embeddings WITHOUT deleting existing ones."""
         print("Updating embeddings (non-destructif)...")
         try:
-            # Récupérer la collection à nouveau (en cas de perte de référence)
+            # Retrieve the collection again (in case of reference loss)
             collection = self.client.get_or_create_collection(
                 name=self.collection_name,
                 embedding_function=self.embedding_function
             )
-            # Juste ajouter les nouveaux documents
+            # Just add the new documents
             general_docs = self._prepare_documents()
             menu_docs = self._load_menu_items()
             all_docs = general_docs + menu_docs
             
-            # Ajouter/mettre à jour sans supprimer
+            # Add/update without deleting
             collection.add(
                 ids=[doc['id'] for doc in all_docs],
                 documents=[doc['text'] for doc in all_docs],
@@ -318,14 +318,14 @@ class EmbeddingsManager:
             print(f"Embeddings updated!")
             return {'total': stats['total'], 'general': len(general_docs), 'menu': len(menu_docs)}
         except Exception as e:
-            print(f"Erreur lors de la récupération des stats: {e}")
+            print(f"Error retrieving stats: {e}")
             return {'total': 0, 'general':0, 'menu': 0 }
     
     def get_stats(self) -> Dict[str, Any]:
-        """Récupère les stats de la collection."""
+        """Retrieve collection stats."""
 
         try:
-            # Récupérer la collection à nouveau (en cas de perte de référence)
+            # Retrieve the collection again (in case of reference loss)
             collection = self.client.get_or_create_collection(
                 name=self.collection_name,
                 embedding_function=self.embedding_function
@@ -348,17 +348,17 @@ class EmbeddingsManager:
                 'by_type': type_counts
             }
         except Exception as e:
-            print(f"Erreur lors de la récupération des stats: {e}")
+            print(f"Error retrieving stats: {e}")
             return {'total': 0, 'by_type': {}}
     
     def search(self, query: str, n_results: int = 5, filter_type: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Effectue une recherche."""
+        """Perform a search."""
         where_filter = None
         if filter_type:
             where_filter = {"type": filter_type}
         
         try:
-            # Récupérer la collection à nouveau (en cas de perte de référence)
+            # Retrieve the collection again (in case of reference loss)
             collection = self.client.get_or_create_collection(
                 name=self.collection_name,
                 embedding_function=self.embedding_function
@@ -464,7 +464,7 @@ def search_mode(manager: EmbeddingsManager):
 def main():
     """Script principal avec menu interactif."""
     try:
-        # Initialiser le manager
+        # Initialize the manager
         print("Initialisation du manager...")
         manager = EmbeddingsManager(
             json_path="general-inqueries.json",

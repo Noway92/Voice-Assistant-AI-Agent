@@ -4,10 +4,10 @@ Shows detailed logs of what happens when placing an order
 """
 
 import sys
-import os
+from pathlib import Path
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from agents.order_handling_agent import OrderHandlingAgent
 from database.db_config import SessionLocal

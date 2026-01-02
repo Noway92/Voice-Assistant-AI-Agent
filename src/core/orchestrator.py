@@ -27,7 +27,7 @@ class Orchestrator:
         if isOffline:
             self.llm = OllamaLLM(model="llama3", temperature=0)
         else:
-            api_key = os.getenv("API_KEY_OPENAI")  # Lire la clé depuis les variables d'environnement
+            api_key = os.getenv("API_KEY_OPENAI")  # Read key from environment variables
             if not api_key:
                 raise ValueError("API_KEY_OPENAI not found in environment variables")
             self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=api_key)

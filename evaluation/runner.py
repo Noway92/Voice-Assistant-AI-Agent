@@ -9,7 +9,8 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from evaluation.evaluators.intent_evaluator import IntentEvaluator
 from evaluation.evaluators.agent_evaluator import AgentEvaluator

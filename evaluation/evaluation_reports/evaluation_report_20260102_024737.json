@@ -1,0 +1,455 @@
+{
+  "metadata": {
+    "timestamp": "2026-01-02T02:43:55.798751",
+    "version": "1.0"
+  },
+  "results": {
+    "timestamp": "2026-01-02T02:43:55.798751",
+    "configuration": {
+      "is_offline": false,
+      "evaluations_run": [
+        "intent",
+        "agents",
+        "rag",
+        "e2e"
+      ]
+    },
+    "intent_classification": {
+      "accuracy": 0.9473684210526315,
+      "per_class": {
+        "general": {
+          "precision": 0.9245283018867925,
+          "recall": 0.98,
+          "f1": 0.9514563106796116,
+          "support": 50
+        },
+        "order": {
+          "precision": 0.9473684210526315,
+          "recall": 0.9,
+          "f1": 0.9230769230769231,
+          "support": 20
+        },
+        "reservation": {
+          "precision": 1.0,
+          "recall": 0.92,
+          "f1": 0.9583333333333334,
+          "support": 25
+        }
+      },
+      "macro_precision": 0.9572989076464746,
+      "macro_recall": 0.9333333333333332,
+      "macro_f1": 0.9442888556966227,
+      "confusion_matrix": {
+        "general": {
+          "general": 49,
+          "order": 1,
+          "reservation": 0
+        },
+        "order": {
+          "general": 2,
+          "order": 18,
+          "reservation": 0
+        },
+        "reservation": {
+          "general": 2,
+          "order": 0,
+          "reservation": 23
+        }
+      },
+      "total_samples": 95,
+      "weakest_class": {
+        "name": "order",
+        "f1": 0.9230769230769231
+      },
+      "misclassifications": [
+        {
+          "input": "What's your cancellation policy?",
+          "expected": "reservation",
+          "predicted": "general",
+          "correct": false
+        },
+        {
+          "input": "Do you require a deposit for large groups?",
+          "expected": "reservation",
+          "predicted": "general",
+          "correct": false
+        },
+        {
+          "input": "Can you make the pasta without cheese?",
+          "expected": "general",
+          "predicted": "order",
+          "correct": false
+        },
+        {
+          "input": "Do you deliver to my area?",
+          "expected": "order",
+          "predicted": "general",
+          "correct": false
+        },
+        {
+          "input": "What's the delivery fee?",
+          "expected": "order",
+          "predicted": "general",
+          "correct": false
+        }
+      ],
+      "misclassification_rate": 0.05263157894736842
+    },
+    "agents": {
+      "reservation": {
+        "agent_type": "reservation",
+        "total_tests": 5,
+        "task_success_rate": 0.6,
+        "param_extraction_rate": 1.0,
+        "error_rate": 0.0,
+        "results": [
+          {
+            "input": "",
+            "response": "Please provide your request for the reservation so I can assist you.",
+            "expected_action": null,
+            "task_success": false,
+            "params_extracted": {},
+            "params_match": true,
+            "error": null
+          },
+          {
+            "input": "",
+            "response": "Please provide your full question or request regarding table reservations so I can assist you.",
+            "expected_action": null,
+            "task_success": false,
+            "params_extracted": {},
+            "params_match": true,
+            "error": null
+          },
+          {
+            "input": "",
+            "response": "Your reservation for 2 people on January 5th at 8:00 PM has been successfully confirmed under the name Alice and phone 0612345678.",
+            "expected_action": null,
+            "task_success": true,
+            "params_extracted": {
+              "time": "8:00",
+              "guests": 2
+            },
+            "params_match": true,
+            "error": null
+          },
+          {
+            "input": "",
+            "response": "There are available tables for 2 guests on January 5th at 8:00 PM. You can choose from Table 4 (capacity: 2) or any larger table if you prefer.",
+            "expected_action": null,
+            "task_success": true,
+            "params_extracted": {
+              "time": "8:00",
+              "guests": 2,
+              "table": 4
+            },
+            "params_match": true,
+            "error": null
+          },
+          {
+            "input": "",
+            "response": "There are available tables for 2 guests on January 5th at 8:00 PM. You can choose from Table 4 (capacity: 2) or any larger table if you prefer.",
+            "expected_action": null,
+            "task_success": true,
+            "params_extracted": {
+              "time": "8:00",
+              "guests": 2,
+              "table": 4
+            },
+            "params_match": true,
+            "error": null
+          }
+        ]
+      },
+      "general": {
+        "agent_type": "general",
+        "total_tests": 20,
+        "success_rate": 0.95,
+        "avg_keyword_coverage": 0.9208333333333332,
+        "error_rate": 0.0,
+        "results": [
+          {
+            "input": "What are your opening hours?",
+            "response": "Our opening hours are as follows: Monday to Thursday from 11:30 AM to 10:30 PM, Friday from 11:30 AM to 11:00 PM, Saturday from 12:00 PM to 11:00 PM, and Sunday from 12:00 PM to 9:00 PM. Please note that the kitchen closes 30 minutes before closing time. We are closed on December 25th, January 1st, and May 1st. If you have any other questions, feel free to ask!",
+            "expected_topic": "opening_hours",
+            "keywords_found": [
+              "11:30",
+              "open",
+              "close"
+            ],
+            "keyword_coverage": 0.75,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "When do you close on Sundays?",
+            "response": "On Sundays, we close at 21:00. Please note that the last seating is 30 minutes before closing. If you have any other questions, feel free to ask!",
+            "expected_topic": "opening_hours",
+            "keywords_found": [
+              "Sunday",
+              "21:00",
+              "close"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Are you open on weekends?",
+            "response": "Yes, we are open on weekends! Our hours are Saturday from 12:00 PM to 11:00 PM and Sunday from 12:00 PM to 9:00 PM. We look forward to seeing you!",
+            "expected_topic": "opening_hours",
+            "keywords_found": [
+              "Saturday",
+              "Sunday",
+              "open"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "What's your last seating time?",
+            "response": "Our last seating time is 30 minutes before closing. So, on weekdays, it's at 21:30, on Friday and Saturday at 22:30, and on Sunday at 20:30. We hope to see you soon!",
+            "expected_topic": "opening_hours",
+            "keywords_found": [
+              "30 minutes",
+              "before",
+              "closing"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Are you closed on any holidays?",
+            "response": "I couldn't find specific information about holiday closures. I recommend contacting us directly for details on our holiday schedule.",
+            "expected_topic": "opening_hours",
+            "keywords_found": [],
+            "keyword_coverage": 0.0,
+            "success": false,
+            "error": null
+          },
+          {
+            "input": "Where is the restaurant located?",
+            "response": "Our restaurant is located at 12 Rue de la R\u00e9publique, 75001 Paris, France. You can reach us easily by taking Metro line 1 to R\u00e9publique station, which is just a 3-minute walk away. For parking, there's a R\u00e9publique underground parking lot about 100 meters away, with a rate of \u20ac2 per hour. Please note that street parking is limited in the blue zone, so it's best to check with the city hall for details.",
+            "expected_topic": "location",
+            "keywords_found": [
+              "12",
+              "Rue",
+              "R\u00e9publique",
+              "Paris"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "What's your address?",
+            "response": "Our address is 12 Rue de la R\u00e9publique, 75001 Paris, France. You can reach us by taking Metro line 1 to R\u00e9publique station, which is just a 3-minute walk away. For parking, there's a R\u00e9publique underground parking lot about 100 meters away, with a rate of \u20ac2 per hour. Please note that street parking is limited in the blue zone, so it's best to check with the city hall. We look forward to seeing you!",
+            "expected_topic": "location",
+            "keywords_found": [
+              "12",
+              "Rue",
+              "R\u00e9publique",
+              "75001"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "How do I get to the restaurant?",
+            "response": "You can find us at 12 Rue de la R\u00e9publique, 75001 Paris, France. If you're taking the metro, the closest station is R\u00e9publique on line 1, which is just a 3-minute walk away. For parking, there's an underground parking facility nearby at R\u00e9publique, about 100 meters away, with a rate of \u20ac2 per hour. Street parking is also available, but it's limited to a blue zone, so be sure to check with the city hall for details. Safe travels!",
+            "expected_topic": "location",
+            "keywords_found": [
+              "Metro",
+              "R\u00e9publique",
+              "walk"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Is there parking nearby?",
+            "response": "Yes, there is parking nearby! You can find R\u00e9publique underground parking just 100 meters away, with a rate of \u20ac2 per hour. Additionally, there is limited blue zone street parking available, so it's a good idea to check with the city hall for more details. If you have any other questions, feel free to ask!",
+            "expected_topic": "location",
+            "keywords_found": [
+              "parking",
+              "R\u00e9publique",
+              "underground"
+            ],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "What metro station is closest?",
+            "response": "The closest metro station is R\u00e9publique, which is just a 3-minute walk from our restaurant. If you're driving, there's an underground parking facility nearby at R\u00e9publique, and street parking is also available, though it's limited. Let me know if you need any more information!",
+            "expected_topic": "location",
+            "keywords_found": [
+              "Metro",
+              "R\u00e9publique"
+            ],
+            "keyword_coverage": 0.6666666666666666,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Is the Caesar salad gluten-free?",
+            "response": "The Caesar salad may not be specifically labeled as gluten-free, but we can adapt dishes to accommodate dietary needs. Please report any allergies when ordering. If you have further concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Does the pasta contain nuts?",
+            "response": "While I couldn't find specific information about whether the pasta contains nuts, we do have a nut-free option available. I recommend reporting any allergies when you order, as our chefs can adapt dishes to accommodate your needs. If you have further concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "What allergens are in the burger?",
+            "response": "Our burgers may contain common allergens such as gluten, peanuts, tree nuts, shellfish, eggs, milk, and mustard. Please report any allergies when ordering, and our chefs can adapt dishes to accommodate your needs. If you have specific concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Is there dairy in the soup?",
+            "response": "While I couldn't find specific information about dairy in the soup, we do have a policy to report any allergies when ordering. Our chefs can adapt dishes to accommodate dietary needs. If you have concerns, please feel free to contact us at +33 1 23 45 67 89.",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Can you tell me about shellfish in your dishes?",
+            "response": "We do have shellfish in some of our dishes. If you have a shellfish allergy, please report it when ordering, and our chefs can adapt dishes to accommodate your needs. If you have any specific concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "How much is the steak?",
+            "response": "I couldn't find any steak listed on our menu. Would you like to know about other meat options or dishes? Please feel free to ask!",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "What's the price of the lunch menu?",
+            "response": "Our lunch menu includes several delicious options: Lasagna for $13.50, Caesar Salad for $8.50, Margherita Pizza for $12.50, Pepperoni Pizza for $14.00, and Tiramisu for $6.50. Would you like to know more about any specific dish?",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "How much does the wine cost?",
+            "response": "I couldn't find specific information about wine prices on our menu. I recommend checking with us directly for the latest wine offerings and their prices. Would you like assistance with anything else?",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "What are your most expensive dishes?",
+            "response": "Our most expensive dishes include the Pepperoni Pizza for $14.00, and the Lasagna for $13.50. Would you like to know more about any specific dish?",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          },
+          {
+            "input": "Do you have anything under 15 euros?",
+            "response": "I'm sorry, but it seems we don't have any menu items priced under 15 euros. If you're looking for something specific, feel free to ask!",
+            "expected_topic": "",
+            "keywords_found": [],
+            "keyword_coverage": 1.0,
+            "success": true,
+            "error": null
+          }
+        ]
+      },
+      "order": {
+        "agent_type": "order",
+        "total_tests": 2,
+        "success_rate": 0.5,
+        "error_rate": 0.0,
+        "results": [
+          {
+            "input": "I'd like to order a pizza",
+            "response": "Could you please provide your name and phone number so I can create your order?",
+            "expected_action": "place_order",
+            "expected_items": [
+              "pizza"
+            ],
+            "items_found": [],
+            "success": false,
+            "error": null
+          },
+          {
+            "input": "Add a burger to my order",
+            "response": "Please provide your name and phone number so I can create your order and add a burger to it.",
+            "expected_action": "modify_order",
+            "expected_items": [
+              "burger"
+            ],
+            "items_found": [
+              "burger"
+            ],
+            "success": true,
+            "error": null
+          }
+        ]
+      }
+    },
+    "rag": {
+      "total_queries": 10,
+      "mrr": 0.9,
+      "precision_at_k": {
+        "3": 0.4,
+        "5": 0.26000000000000006
+      },
+      "hit_rate_at_k": {
+        "3": 1.0,
+        "5": 1.0
+      },
+      "errors": 0,
+      "ragas": {
+        "error": "Ragas not available. Install with: pip install ragas",
+        "ragas_available": false
+      }
+    },
+    "end_to_end": {
+      "success_rate": 0.4,
+      "avg_turns_to_completion": 1.25,
+      "error_recovery_rate": 0.0,
+      "by_task_type": {
+        "reservation": {
+          "total": 10,
+          "success": 4,
+          "success_rate": 0.4
+        }
+      },
+      "total_tasks": 10,
+      "successful_tasks": 4
+    }
+  }
+}

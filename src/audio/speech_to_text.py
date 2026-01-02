@@ -38,16 +38,16 @@ class SpeechToText:
                 sd.wait()
                 audio_chunks.append(chunk)
         
-        # Démarrer l'enregistrement
+        # Start recording
         record_thread = threading.Thread(target=record, daemon=True)
         record_thread.start()
         
-        # Attendre Entrée
+        # Wait for input
         input()
         stop_recording.set()
         record_thread.join()
                 
-        # Fusionner et sauvegarder
+        # Mix and save
         if audio_chunks:
             audio = np.vstack(audio_chunks)
             audio_int16 = (audio.flatten() * 32767).astype(np.int16)

@@ -10,7 +10,7 @@ from src.audio.speech_to_text import SpeechToText
 
 
 class AudioAdapter:
-    """Adapte les formats audio entre Twilio et le système local."""
+    """Adapts audio formats between Twilio and the local system."""
     
     def __init__(self,isOffline=False):
         """Initialise l'adaptateur audio."""
@@ -30,14 +30,14 @@ class AudioAdapter:
             Chemin local du fichier téléchargé
         """
         try:
-            # Ajouter l'extension .wav si nécessaire
+            # Add .wav extension if necessary
             if not recording_url.endswith('.wav'):
                 recording_url += '.wav'
             
-            #Utiliser l'authent de twillio pour récup les infos
+            # Use Twilio authentication to retrieve info
             account_sid = os.getenv('TWILIO_ACCOUNT_SID')
             auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-            # Télécharger le fichier
+            # Download the file
             response = requests.get(
                 recording_url, 
                 auth=(account_sid, auth_token),  # ← FIX ICI
@@ -94,7 +94,7 @@ class AudioAdapter:
             Chemin du fichier converti
         """
         # Pour l'instant, Twilio accepte plusieurs formats
-        # On peut implémenter une conversion avec pydub si nécessaire
+        # Can implement conversion with pydub if necessary
         return audio_file_path
     
     def cleanup_temp_files(self, file_path: str):

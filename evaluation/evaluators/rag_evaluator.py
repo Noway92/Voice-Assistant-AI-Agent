@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from evaluation.metrics import compute_retrieval_metrics, compute_semantic_similarity
 

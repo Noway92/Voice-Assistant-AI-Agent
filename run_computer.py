@@ -3,10 +3,11 @@ import time
 from pathlib import Path
 from typing import List, Dict
 
+
 # Ajouter le dossier src au path
 sys.path.append(str(Path(__file__).parent / "src"))
 
-# MAJ de ces fichiers pour créer des classes
+# TODO: Update these files to create classes
 from src.audio.speech_to_text import SpeechToText
 from src.audio.text_to_speech import TextToSpeech
 from src.core.traductor import LanguageProcessor
@@ -93,7 +94,7 @@ class VoiceAssistant:
                 # Step 2-3-4: Process (translate -> orchestrate -> translate back)
                 result = self.process(user_input)
 
-                # Exit si il a demandé de partir
+                # Exit if user requested to leave
                 if not result : break
 
                 response, language = result

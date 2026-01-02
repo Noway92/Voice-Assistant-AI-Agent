@@ -6,8 +6,8 @@ import subprocess
 import torch
 import torchaudio
 
-from TTS.tts.configs.xtts_config import XttsConfig
-from TTS.tts.models.xtts import Xtts
+#from TTS.tts.configs.xtts_config import XttsConfig
+#from TTS.tts.models.xtts import Xtts
 import sounddevice as sd
 import soundfile as sf
 
@@ -30,9 +30,9 @@ class TextToSpeech:
                 self.xtts_reference_wav = os.path.join(script_dir, "tts", "reference.wav")
                 
                 # Load config and model
-                self.xtts_config = XttsConfig()
+                #self.xtts_config = XttsConfig()
                 self.xtts_config.load_json(self.xtts_config_path)
-                self.xtts_model = Xtts.init_from_config(self.xtts_config)
+                #self.xtts_model = Xtts.init_from_config(self.xtts_config)
                 
                 # Get the directory containing the model files
                 checkpoint_dir = os.path.dirname(self.xtts_model_path)
@@ -77,7 +77,7 @@ class TextToSpeech:
         engine.runAndWait()
         time.sleep(0.5)
     
-    def speak_custom_xtts(self, text, language='en', output_path="output_xtts.wav"):
+    def speak_custom_xtts(self, text, language='en', output_path="static/audioGenerated/output_xtts.wav"):
         """Use custom trained XTTS model for TTS with optimal parameters."""
         print(f"[Custom XTTS] Speaking in {language}: {text}")
         
@@ -119,7 +119,7 @@ class TextToSpeech:
             print("[Custom XTTS] Falling back to offline TTS")
             self.speak_offline(text)
     
-    def speak_online_computer(self, text):
+    def speak_online_computer(self, text, output_path="static/audioGenerated/output_tts_online_computer.mp3"):
         """Use OpenAI API to speak directly on computer."""
         print(f"[TTS Online Computer] {self.voice} Speaking: {text}\n\n")
         response = self.client.audio.speech.create(
@@ -127,7 +127,7 @@ class TextToSpeech:
             voice=self.voice,
             input=text
         )
-        output_path="static/audioListened/output_tts.mp3"
+        
         # Sauvegarder le fichier audio
         with open(output_path, "wb") as f:
             f.write(response.read())
@@ -145,7 +145,7 @@ class TextToSpeech:
         except Exception as e:
             print(f"Erreur lors de la lecture audio: {e}")
     
-    def speak_online_phone(self, text, output_path="output_tts_online.mp3"):
+    def speak_online_phone(self, text, output_path="static/audioGenerated/output_tts_online_phone.mp3"):
         """Use OpenAI API for online TTS."""
         print(f"[TTS Online Phone] {self.voice} Speaking: {text}\n\n")
         response = self.client.audio.speech.create(
@@ -162,14 +162,14 @@ class TextToSpeech:
     
     def speak(self, text, output_path="output_tts_online.mp3", language='en'):
         """Speak the text using the configured method."""
-        if self.use_custom_xtts:
-            self.speak_custom_xtts(text, language=language)
         # Create a mp3 file for phone call
-        else :
-            if self.use_phone :
-                self.speak_online_phone(text,output_path)
-            # Read directly for computer use
-            else:
+        if self.use_phone :
+            self.speak_online_phone(text,output_path)
+        else:
+            if self.use_custom_xtts:
+                self.speak_custom_xtts(text, language=language)
+            else :
+                # Read directly for computer use
                 if self.use_offline :
                     self.speak_offline(text)
                 else :

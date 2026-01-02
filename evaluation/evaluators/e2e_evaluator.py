@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Callable
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from evaluation.metrics import compute_task_completion_rate
 

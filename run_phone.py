@@ -2,6 +2,7 @@
 Serveur Flask pour gérer les webhooks Twilio.
 """
 
+
 from flask import Flask, request, Response, send_from_directory
 from src.phone.twilio_handler import TwilioHandler
 from src.audio.text_to_speech import TextToSpeech
@@ -138,7 +139,7 @@ def wait_for_response():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Endpoint de santé pour vérifier que le serveur fonctionne."""
+    """Health endpoint to verify that the server is working."""
     return {
         "status": "healthy",
         "service": "Voice Assistant AI Agent",
@@ -149,7 +150,7 @@ def health_check():
 # Endpoint for Debug
 @app.route('/debug/active-calls', methods=['GET'])
 def get_active_calls():
-    """Récupère tous les appels actifs en mémoire."""
+    """Retrieve all active calls in memory."""
     return {
         "active_calls": twilio_handler.phone_main.active_calls,
         "count": len(twilio_handler.phone_main.active_calls)
@@ -158,7 +159,7 @@ def get_active_calls():
 
 @app.route('/debug/call/<call_sid>', methods=['GET'])
 def get_call_details(call_sid):
-    """Récupère les détails d'un appel spécifique."""
+    """Retrieve details of a specific call."""
     call_info = twilio_handler.phone_main.active_calls.get(call_sid)
     
     if call_info:
@@ -196,12 +197,12 @@ def serve_audio_automatic(filename):
 
 @app.route('/static/audio-generated/<filename>')
 def serve_audio_generated(filename):
-    """Sert les fichiers audio générés dynamiquement (réponses)."""
+    """Serve dynamically generated audio files (responses)."""
     return send_from_directory('static/audioGenerated', filename)
 
 
 def generate_static_audio():
-    """Génère les messages audio standards au démarrage."""
+    """Generate standard audio messages on startup."""
     audio_dir = 'static/audioAutomatic'
     generated_dir = 'static/audioGenerated'
     os.makedirs(audio_dir, exist_ok=True)
@@ -231,7 +232,7 @@ def generate_static_audio():
 
 
 if __name__ == '__main__':
-    # Générer les fichiers audio standards
+    # Generate standard audio files
     generate_static_audio()
 
     port = int(os.getenv('PORT', 5000))

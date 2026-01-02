@@ -8,11 +8,11 @@ import sys
 from pathlib import Path
 
 # Add parent directories to path (project root)
-project_root = Path(__file__).parent.parent.parent
+project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 sys.path.append(str(project_root / "src"))  # Also add src for module imports
 
-from main import VoiceAssistant
+from run_computer import VoiceAssistant
 from core.orchestrator import Orchestrator
 from rag.rag import EmbeddingsManager
 from evaluation.runner import EvaluationRunner

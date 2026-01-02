@@ -4,7 +4,7 @@ from langchain_ollama import OllamaLLM
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import create_react_agent, Tool, AgentExecutor
 from langchain_core.prompts import PromptTemplate
-from .tools.order_tools_sql import (
+from .tools.order_tools import (
     create_order_tool,
     add_item_tool,
     update_item_tool,
@@ -14,6 +14,7 @@ from .tools.order_tools_sql import (
     check_status_tool,
     cancel_order_tool
 )
+from .tools.general_inquiry_tools import search_menu_items_tool
 
 
 class OrderHandlingAgent:
@@ -105,6 +106,16 @@ class OrderHandlingAgent:
                     "Cancel an order. "
                     "Input should be: 'order_id: ID, phone: PHONE'. "
                     "Example: 'order_id: 1, phone: 0612345678'"
+                )
+            ),
+            Tool(
+                name="search_menu_items",
+                func=lambda input_str: self._parse_and_search_menu(input_str),
+                description=(
+                    "Search for menu items available at the restaurant. "
+                    "Input should be: 'query: SEARCH_QUERY' "
+                    "SEARCH_QUERY can be: pizza, vegetarian, desserts, chicken, etc. "
+                    "Example: 'query: vegetarian dishes' or 'query: pizza'"
                 )
             )
         ]
@@ -204,6 +215,16 @@ class OrderHandlingAgent:
         except Exception as e:
             return f"Error parsing input: {str(e)}. Please provide: order_id and phone."
     
+    def _parse_and_search_menu(self, input_str: str) -> str:
+        """Parse input and search menu items."""
+        try:
+            input_str = input_str.strip().strip("'\"")
+            params = self._parse_input(input_str)
+            query = params.get('query', 'menu items')
+            return search_menu_items_tool(query)
+        except Exception as e:
+            return f"Error searching menu: {str(e)}. Please provide: query (what to search for)."
+    
     def _parse_input(self, input_str: str) -> dict:
         """Parse input string into parameters."""
         params = {}
@@ -227,7 +248,7 @@ Tool Names: {tool_names}
 
 IMPORTANT: You MUST follow this EXACT format for every action:
 1. Thought: Explain what you need to do (REQUIRED)
-2. Action: Use EXACTLY one of these tool names: create_order, add_item, update_item, remove_item, view_order, finalize_order, check_order_status, cancel_order
+2. Action: Use EXACTLY one of these tool names: create_order, add_item, update_item, remove_item, view_order, finalize_order, check_order_status, cancel_order, search_menu_items
 3. Action Input: Provide parameters in format "key: value, key: value" (REQUIRED - NEVER EMPTY)
 4. Observation: Wait for tool response
 5. Final Answer: Only after you have completed ALL necessary actions

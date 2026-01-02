@@ -306,5 +306,5 @@ def search_dietary_tool(query: str) -> str:
 
 def search_menu_items_tool(query: str) -> str:
     """Search for menu items from the database."""
-    return GeneralInquiryTools.search_menu_items(query, n_results=3)
+    return GeneralInquiryTools.search_menu_items(query, n_results=10)
 

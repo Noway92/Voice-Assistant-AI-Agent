@@ -4,15 +4,15 @@ Tests database connection, order creation, item management, and order status upd
 """
 
 import sys
-import os
+from pathlib import Path
 from datetime import datetime
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from database.db_config import SessionLocal, test_connection
 from database.database import Order, OrderItem, MenuItem
-from agents.tools.order_tools_sql import OrderToolsSQL
+from agents.tools.order_tools import OrderToolsSQL
 
 
 def populate_sample_menu_items():

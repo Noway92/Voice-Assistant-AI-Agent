@@ -16,17 +16,17 @@ DB_NAME = os.getenv("DB_NAME", "restaurant_db")
 # Construction de l'URL de connexion
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-# Créer l'engine SQLAlchemy
+# Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL, echo=True, pool_pre_ping=True)
 
 # Session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base pour les modèles
+# Base for models
 Base = declarative_base()
 
 def get_db():
-    """Obtenir une session de base de données."""
+    """Get a database session."""
     db = SessionLocal()
     try:
         yield db
@@ -34,13 +34,13 @@ def get_db():
         db.close()
 
 def init_db():
-    """Initialiser la base de données (créer toutes les tables)."""
+    """Initialize database (create all tables)."""
     from .database import Client, Reservation, Table, MenuItem, Order, OrderItem
     Base.metadata.create_all(bind=engine)
     print("[SUCCESS] Tables created successfully!")
 
 def test_connection():
-    """Tester la connexion à la base de données."""
+    """Test database connection."""
     try:
         connection = engine.connect()
         connection.close()

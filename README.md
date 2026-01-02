@@ -23,7 +23,6 @@ Copy the adress in "Voice Configuration" → "A CALL COMES IN"
 
 ## Reste à Faire : 
 
-- Merge la branch vlb pour avoir l'agent order handling + la voix de vianney
 - Peaufiner les prompts des différents agents
 - Faire le streamlit
 
