@@ -152,7 +152,7 @@ class ReservationToolsSQL:
                     Reservation.date == reservation_date,
                     Reservation.time == time,
                     Client.name.ilike(f"%{customer_name}%"),
-                    Reservation.status == "booked"
+                    Reservation.status.in_(["booked", "confirmed"])
                 )
                 .first()
             )
@@ -190,7 +190,7 @@ class ReservationToolsSQL:
                 db.query(Reservation, Client, Table)
                 .join(Client, Reservation.client_id == Client.id)
                 .join(Table, Reservation.table_id == Table.id)
-                .filter(Reservation.status == "booked")
+                .filter(Reservation.status.in_(["booked", "confirmed"]))
             )
 
             if date_str:
@@ -236,7 +236,7 @@ class ReservationToolsSQL:
                 .join(Table, Reservation.table_id == Table.id)
                 .filter(
                     Reservation.client_id == client.id,
-                    Reservation.status == "booked"
+                    Reservation.status.in_(["booked", "confirmed"])
                 )
                 .order_by(Reservation.date.desc(), Reservation.time.desc())
                 .all()
@@ -285,7 +285,7 @@ class ReservationToolsSQL:
             Reservation.table_id == table_id,
             Reservation.date == date,
             Reservation.time == time,
-            Reservation.status == "booked"
+            Reservation.status.in_(["booked", "confirmed"])
         ).first()
 
         return existing_reservation is not None

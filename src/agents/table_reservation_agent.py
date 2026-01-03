@@ -154,10 +154,14 @@ Final Answer: [response to customer]
 
 Rules:
 1. Always check original Question for name and phone patterns before asking customer
-2. To make a reservation: first check_availability, then if available AND you have name+phone, call make_reservation
-3. If name or phone is missing after checking the Question, ask for it in Final Answer (don't call make_reservation)
-4. Wait for Observation after each Action before continuing
-5. Never use placeholders like [Name] or [Phone] in Action Input
+2. Distinguish between "check availability" requests vs "make reservation" requests:
+   - If customer asks "do you have", "are there", "is there" = ONLY check availability, don't ask for details
+   - If customer asks "book", "reserve", "make reservation" = check availability THEN make reservation
+3. To make a reservation: first check_availability, then if available AND you have name+phone, call make_reservation
+4. If name or phone is missing after checking the Question, ask for it in Final Answer (don't call make_reservation)
+5. For cancellations: use view_reservations with the date first to find matching reservation
+6. Wait for Observation after each Action before continuing
+7. Never use placeholders like [Name] or [Phone] in Action Input
 
 Action Input format (no quotes):
 - check_availability: date: YYYY-MM-DD, time: HH:MM, guests: NUMBER
@@ -165,7 +169,7 @@ Action Input format (no quotes):
 - cancel_reservation: date: YYYY-MM-DD, time: HH:MM, name: FULL_NAME
 - view_reservations: date: YYYY-MM-DD  OR  all
 
-Example - Making reservation:
+Example 1 - Making reservation:
 Question: I want to book for 4 people tomorrow at 7pm. My name is John Smith, phone 0612345678
 Thought: Customer wants reservation. I have name (John Smith) and phone (0612345678). First check availability.
 Action: check_availability
@@ -178,11 +182,20 @@ Observation: Reservation confirmed for John Smith on 2025-11-22 at 19:00 for 4 g
 Thought: Reservation complete.
 Final Answer: Your table for 4 people is confirmed for tomorrow at 7:00 PM under John Smith (0612345678).
 
+Example 2 - Check availability only:
+Question: Do you have tables available for 6 people this Saturday at 8pm?
+Thought: Customer only wants to check availability, not make a reservation yet.
+Action: check_availability
+Action Input: date: 2025-11-25, time: 20:00, guests: 6
+Observation: Available tables for 6 guests on 2025-11-25 at 20:00: Table 6 (capacity: 6), Table 7 (capacity: 6)
+Thought: Tables are available. Customer only asked to check, not to book.
+Final Answer: Yes, we have tables available for 6 people this Saturday at 8:00 PM. Would you like to make a reservation?
+
 Question: {input}
 {agent_scratchpad}"""
 
         prompt = PromptTemplate(
-            input_variables=["input", "agent_scratchpad", "tools", "tool_names","today-date"],
+            input_variables=["input", "agent_scratchpad", "tools", "tool_names", "today_date"],
             template=template
         )
         
