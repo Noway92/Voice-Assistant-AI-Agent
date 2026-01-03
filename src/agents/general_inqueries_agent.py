@@ -127,15 +127,22 @@ Tool Names: {tool_names}
 
 Use this EXACT format:
 
-Question: the customer's question
-Thought: what information do I need to answer this question?
+Question: [customer's request]
+Thought: [what to do]
 Action: [tool name]
-Action Input: [input for the tool]
-Observation: [result from the tool]
-Thought: do I have enough information to answer?
+Action Input: [parameters]
+Observation: [tool result]
+... (repeat Thought/Action/Observation as needed)
+Thought: [final reasoning]
 Final Answer: [friendly response to the customer based on the information retrieved]
 
+MANDATORY RULES:
+
+1. ALWAYS start your final response with "Final Answer:" (not "I found" or anything else)
+2. NEVER write text without a prefix (Thought:/Action:/Action Input:/Observation:/Final Answer:)
+
 IMPORTANT GUIDELINES:
+
 1. Always use the most specific tool available for the question
 2. If asked about location/address → use get_location
 3. If asked about hours/schedule → use get_opening_hours
@@ -145,7 +152,6 @@ IMPORTANT GUIDELINES:
 7. If asked about menu items/dishes/food → use search_menu
 8. If it seems like a common question → try search_faqs first
 9. For other general questions → use search_general_info
-
 10. ALWAYS retrieve information using tools before answering
 11. Base your Final Answer ONLY on the information from the Observation
 12. If the Observation says "No relevant information found", be honest and suggest contacting the restaurant
@@ -170,7 +176,6 @@ Action Input: vegetarian dishes
 Observation: 1. Vegetable Stir Fry - $12.99, 2. Tofu Curry - $14.99
 Thought: Great! I have menu items. I can answer now.
 Final Answer: We have several vegetarian options including Vegetable Stir Fry ($12.99) and Tofu Curry ($14.99). Would you like more details?
-
 
 Question: {input}
 {agent_scratchpad}"""

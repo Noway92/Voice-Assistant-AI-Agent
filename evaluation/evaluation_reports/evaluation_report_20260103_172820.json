@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "timestamp": "2026-01-02T02:32:37.262537",
+    "timestamp": "2026-01-03T17:23:35.624694",
     "version": "1.0"
   },
   "results": {
-    "timestamp": "2026-01-02T02:32:37.262537",
+    "timestamp": "2026-01-03T17:23:35.624694",
     "configuration": {
       "is_offline": false,
       "evaluations_run": [
@@ -99,58 +99,65 @@
       "reservation": {
         "agent_type": "reservation",
         "total_tests": 5,
-        "task_success_rate": 0.4,
-        "param_extraction_rate": 1.0,
+        "task_success_rate": 0.6,
+        "param_extraction_rate": 0.4,
         "error_rate": 0.0,
         "results": [
           {
-            "input": "",
-            "response": "There are available tables for 2 guests on January 5th at 8 PM. Would you like to make a reservation?",
-            "expected_action": null,
+            "input": "I'd like to book a table for 4 people tomorrow at 7pm. My name is John Smith and my phone is 0612345678",
+            "response": "Your table for 4 people is confirmed for tomorrow at 7:00 PM under John Smith (0612345678).",
+            "expected_action": "make_reservation",
             "task_success": true,
             "params_extracted": {
-              "guests": 2
+              "time": "7:00",
+              "guests": 4
             },
-            "params_match": true,
+            "params_match": false,
             "error": null
           },
           {
-            "input": "",
-            "response": "Could you please provide the full details of your reservation request, including the date, time, number of guests, and your name and phone number?",
-            "expected_action": null,
+            "input": "Book a table for 2 at 8pm tomorrow",
+            "response": "I can reserve a table for 2 at 8:00 PM tomorrow. Could you please provide your name and phone number?",
+            "expected_action": "make_reservation",
             "task_success": false,
-            "params_extracted": {},
-            "params_match": true,
+            "params_extracted": {
+              "time": "8:00"
+            },
+            "params_match": false,
             "error": null
           },
           {
-            "input": "",
-            "response": "Could you please provide the full details of your reservation request, including the date, time, number of guests, your name, and phone number?",
-            "expected_action": null,
-            "task_success": false,
-            "params_extracted": {},
-            "params_match": true,
-            "error": null
-          },
-          {
-            "input": "",
-            "response": "There are available tables for 2 guests on January 5th at 8:00 PM. You can choose from Table 1, Table 4, or any larger table if you prefer.",
-            "expected_action": null,
+            "input": "Do you have tables available for 6 people this Saturday at 8pm?",
+            "response": "Yes, we have tables available for 6 people this Saturday at 8:00 PM. Would you like to make a reservation?",
+            "expected_action": "check_availability",
             "task_success": true,
             "params_extracted": {
               "time": "8:00",
-              "guests": 2,
-              "table": 1
+              "guests": 6
             },
             "params_match": true,
             "error": null
           },
           {
-            "input": "",
-            "response": "Please provide your full question or request so I can assist you better.",
-            "expected_action": null,
+            "input": "I need to cancel my reservation for tomorrow at 7pm, my name is Pierre Dupont",
+            "response": "It appears that there is no reservation under the name Pierre Dupont for tomorrow at 7:00 PM. If you need assistance with anything else, please let me know!",
+            "expected_action": "cancel_reservation",
+            "task_success": true,
+            "params_extracted": {
+              "time": "7:00"
+            },
+            "params_match": false,
+            "error": null
+          },
+          {
+            "input": "We're a group of 12 people, can we reserve for Friday at 8pm?",
+            "response": "I'm sorry, but we do not have tables available for 12 people this Friday at 8:00 PM. Would you like to check for a different date or time?",
+            "expected_action": "make_reservation",
             "task_success": false,
-            "params_extracted": {},
+            "params_extracted": {
+              "time": "8:00",
+              "guests": 12
+            },
             "params_match": true,
             "error": null
           }
@@ -165,7 +172,7 @@
         "results": [
           {
             "input": "What are your opening hours?",
-            "response": "Our opening hours are as follows: Monday to Thursday from 11:30 AM to 10:30 PM, Friday from 11:30 AM to 11:00 PM, Saturday from 12:00 PM to 11:00 PM, and Sunday from 12:00 PM to 9:00 PM. Please note that the kitchen closes 30 minutes before closing time. We are closed on December 25th, January 1st, and May 1st. If you have any other questions, feel free to ask!",
+            "response": "Our opening hours are as follows: \n- Monday to Thursday: 11:30 AM - 10:30 PM\n- Friday: 11:30 AM - 11:00 PM\n- Saturday: 12:00 PM - 11:00 PM\n- Sunday: 12:00 PM - 9:00 PM\n\nPlease note that the kitchen closes 30 minutes before the restaurant, and we are closed on December 25th, January 1st, and May 1st. If you have any other questions, feel free to ask!",
             "expected_topic": "opening_hours",
             "keywords_found": [
               "11:30",
@@ -178,7 +185,7 @@
           },
           {
             "input": "When do you close on Sundays?",
-            "response": "On Sundays, we close at 21:00. Please note that the last seating is 30 minutes before closing. If you have any other questions, feel free to ask!",
+            "response": "On Sundays, we close at 21:00. If you have any other questions or need further assistance, feel free to ask!",
             "expected_topic": "opening_hours",
             "keywords_found": [
               "Sunday",
@@ -191,7 +198,7 @@
           },
           {
             "input": "Are you open on weekends?",
-            "response": "Yes, we are open on weekends! Our hours are Saturday from 12:00 PM to 11:00 PM and Sunday from 12:00 PM to 9:00 PM. We look forward to seeing you!",
+            "response": "Yes, we are open on weekends! Our hours are Saturday from 12:00 PM to 11:00 PM and Sunday from 12:00 PM to 9:00 PM. We hope to see you then!",
             "expected_topic": "opening_hours",
             "keywords_found": [
               "Saturday",
@@ -204,7 +211,7 @@
           },
           {
             "input": "What's your last seating time?",
-            "response": "Our last seating time is 30 minutes before closing. So, on weekdays, it's at 10:00 PM, and on weekends, it's at 10:30 PM on Saturday and 8:30 PM on Sunday. If you have any other questions, feel free to ask!",
+            "response": "Our last seating time is 30 minutes before closing. On weekdays, we close at 22:30, so the last seating is at 22:00. On weekends, we close at 23:00, so the last seating is at 22:30. If you have any other questions, feel free to ask!",
             "expected_topic": "opening_hours",
             "keywords_found": [
               "30 minutes",
@@ -217,7 +224,7 @@
           },
           {
             "input": "Are you closed on any holidays?",
-            "response": "I couldn't find specific information about holiday closures. I recommend contacting us directly for the most accurate details regarding our holiday schedule.",
+            "response": "Agent stopped due to iteration limit or time limit.",
             "expected_topic": "opening_hours",
             "keywords_found": [],
             "keyword_coverage": 0.0,
@@ -226,7 +233,7 @@
           },
           {
             "input": "Where is the restaurant located?",
-            "response": "Our restaurant is located at 12 Rue de la R\u00e9publique, 75001 Paris, France. You can reach us easily by taking Metro line 1 to R\u00e9publique station, which is just a 3-minute walk away. For parking, there's an underground parking facility nearby at R\u00e9publique, about 100 meters away, with a rate of \u20ac2 per hour. Please note that street parking is limited in the blue zone, so it's best to check with the city hall for availability.",
+            "response": "Our restaurant is located at 12 Rue de la R\u00e9publique, 75001 Paris, France. You can reach us by taking Metro line 1 to R\u00e9publique station, which is just a 3-minute walk away. For parking, there's a R\u00e9publique underground parking lot 100 meters away, with a rate of \u20ac2 per hour, and limited blue zone street parking is also available.",
             "expected_topic": "location",
             "keywords_found": [
               "12",
@@ -240,7 +247,7 @@
           },
           {
             "input": "What's your address?",
-            "response": "Our address is 12 Rue de la R\u00e9publique, 75001 Paris, France. You can reach us easily by taking Metro line 1 to R\u00e9publique station, which is just a 3-minute walk away. For parking, there's a R\u00e9publique underground parking lot about 100 meters away, with a rate of \u20ac2 per hour. Please note that street parking is limited in the blue zone, so it's best to check with the city hall.",
+            "response": "Our address is 12 Rue de la R\u00e9publique, 75001 Paris, France. You can reach us by taking Metro line 1 to R\u00e9publique station, which is just a 3-minute walk away. For parking, there's a R\u00e9publique underground parking lot 100 meters away, with a rate of \u20ac2 per hour, and limited blue zone street parking available.",
             "expected_topic": "location",
             "keywords_found": [
               "12",
@@ -254,7 +261,7 @@
           },
           {
             "input": "How do I get to the restaurant?",
-            "response": "You can find us at 12 Rue de la R\u00e9publique, 75001 Paris, France. The nearest metro station is R\u00e9publique, which is just a 3-minute walk away. If you're driving, there's an underground parking facility nearby at R\u00e9publique, about 100 meters away, with a rate of \u20ac2 per hour. Please note that street parking is limited, so it's best to check with the city hall for availability.",
+            "response": "You can find us at 12 Rue de la R\u00e9publique, 75001 Paris, France. If you're taking the metro, the closest station is R\u00e9publique, which is just a 3-minute walk away. For parking, there's an underground parking facility nearby that charges \u20ac2 per hour, and limited street parking is available in the blue zone. Let me know if you need any more information!",
             "expected_topic": "location",
             "keywords_found": [
               "Metro",
@@ -280,7 +287,7 @@
           },
           {
             "input": "What metro station is closest?",
-            "response": "The closest metro station to us is R\u00e9publique station, which is just a 3-minute walk away. If you need further assistance with directions, feel free to ask!",
+            "response": "The closest metro station is R\u00e9publique, which is just a 3-minute walk from our restaurant located at 12 Rue de la R\u00e9publique, 75001 Paris, France. If you need more assistance, feel free to ask!",
             "expected_topic": "location",
             "keywords_found": [
               "Metro",
@@ -292,7 +299,7 @@
           },
           {
             "input": "Is the Caesar salad gluten-free?",
-            "response": "The Caesar salad may not be specifically labeled as gluten-free, but we do have gluten-free options available. Please report any allergies when ordering, and our chefs can adapt dishes to meet your needs. If you have further concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "response": "The available dietary options include gluten-free, but I couldn't find specific information about the Caesar salad being gluten-free. I recommend reporting any allergies when ordering, and our chefs can adapt dishes. For specific concerns, please feel free to contact us at +33 1 23 45 67 89.",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -301,7 +308,7 @@
           },
           {
             "input": "Does the pasta contain nuts?",
-            "response": "Our pasta is nut-free, but we recommend reporting any allergies when you place your order to ensure your meal is prepared safely. If you have any other questions or concerns, feel free to ask!",
+            "response": "The pasta is nut-free, but please report any allergies when ordering, as our chefs can adapt dishes. If you have more questions or concerns, feel free to reach out to us!",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -310,7 +317,7 @@
           },
           {
             "input": "What allergens are in the burger?",
-            "response": "Our burgers may contain common allergens such as gluten, peanuts, tree nuts, shellfish, eggs, milk, and mustard. If you have any specific allergies, please report them when ordering, and our chefs can adapt dishes accordingly. If you have further concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "response": "The burger may contain common allergens such as gluten, peanuts, tree nuts, shellfish, eggs, milk, and mustard. If you have any specific allergies, please report them when ordering, as our chefs can adapt dishes to accommodate your needs. If you have further concerns, feel free to contact us at +33 1 23 45 67 89.",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -328,7 +335,7 @@
           },
           {
             "input": "Can you tell me about shellfish in your dishes?",
-            "response": "We do have shellfish in some of our dishes. If you have a shellfish allergy, please report it when ordering, and our chefs can adapt dishes to accommodate your needs. If you have any specific concerns, feel free to contact us at +33 1 23 45 67 89.",
+            "response": "We do have shellfish in some of our dishes. It's important to report any allergies when ordering, as our chefs can adapt dishes to accommodate your needs. If you have specific concerns or need more details, please feel free to contact us at +33 1 23 45 67 89.",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -337,7 +344,7 @@
           },
           {
             "input": "How much is the steak?",
-            "response": "I couldn't find any steak listed on our menu. Would you like to know about other meat options or dishes? Please feel free to ask!",
+            "response": "The Grilled Steak is priced at $28.00. It comes with roasted vegetables and potato gratin. Would you like to know more about our menu?",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -346,7 +353,7 @@
           },
           {
             "input": "What's the price of the lunch menu?",
-            "response": "Our lunch menu includes several delicious options: Lasagna for $13.50, Caesar Salad for $8.50, Margherita Pizza for $12.50, Pepperoni Pizza for $14.00, and Tiramisu for $6.50. Would you like to know more about any specific dish?",
+            "response": "Our lunch menu features a variety of options with prices ranging from $2.50 for an espresso to $32.00 for the Chef's Special. Would you like more details on any specific dish?",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -355,7 +362,7 @@
           },
           {
             "input": "How much does the wine cost?",
-            "response": "I couldn't find specific information about wine prices on our menu. I recommend checking with us directly for the latest wine offerings and their prices. Would you like assistance with anything else?",
+            "response": "Our wine options are priced at $6.00 per glass for both the House White Wine (Chardonnay) and the House Red Wine (Bordeaux AOC). Would you like to know more about our other drinks or menu items?",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -364,7 +371,7 @@
           },
           {
             "input": "What are your most expensive dishes?",
-            "response": "Our most expensive dishes include the Pepperoni Pizza for $14.00 and the Lasagna for $13.50. Would you like to know more about any specific dish?",
+            "response": "The most expensive dishes on our menu include the Chef's Special at $32.00, the Grilled Steak at $28.00, and the Grilled Salmon at $24.00. Let me know if you need more details!",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -373,7 +380,7 @@
           },
           {
             "input": "Do you have anything under 15 euros?",
-            "response": "I'm sorry, but it seems we don't have any menu items priced under 15 euros. If you're looking for something specific, feel free to ask!",
+            "response": "We have several items under 15 euros, including Garlic Bread ($5.00), Lunch Special ($14.90), Espresso ($2.50), and Bruschetta ($7.00). Would you like more information on any of these dishes?",
             "expected_topic": "",
             "keywords_found": [],
             "keyword_coverage": 1.0,
@@ -385,7 +392,7 @@
       "order": {
         "agent_type": "order",
         "total_tests": 2,
-        "success_rate": 0.5,
+        "success_rate": 1.0,
         "error_rate": 0.0,
         "results": [
           {
@@ -396,12 +403,12 @@
               "pizza"
             ],
             "items_found": [],
-            "success": false,
+            "success": true,
             "error": null
           },
           {
             "input": "Add a burger to my order",
-            "response": "Please provide your phone number and order ID so I can add the burger to your order.",
+            "response": "Please provide your name and phone number to place a new order that includes a burger.",
             "expected_action": "modify_order",
             "expected_items": [
               "burger"
@@ -417,13 +424,13 @@
     },
     "rag": {
       "total_queries": 10,
-      "mrr": 0.9,
+      "mrr": 0.8,
       "precision_at_k": {
-        "3": 0.4,
-        "5": 0.26000000000000006
+        "3": 0.4666666666666666,
+        "5": 0.36000000000000004
       },
       "hit_rate_at_k": {
-        "3": 1.0,
+        "3": 0.9,
         "5": 1.0
       },
       "errors": 0,
@@ -433,18 +440,18 @@
       }
     },
     "end_to_end": {
-      "success_rate": 0.5,
-      "avg_turns_to_completion": 1.2,
-      "error_recovery_rate": 0.0,
+      "success_rate": 0.7,
+      "avg_turns_to_completion": 1.1428571428571428,
+      "error_recovery_rate": 0.5,
       "by_task_type": {
         "reservation": {
           "total": 10,
-          "success": 5,
-          "success_rate": 0.5
+          "success": 7,
+          "success_rate": 0.7
         }
       },
       "total_tasks": 10,
-      "successful_tasks": 5
+      "successful_tasks": 7
     }
   }
 }

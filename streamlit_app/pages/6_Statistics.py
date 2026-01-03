@@ -469,7 +469,7 @@ try:
                 'Tables',
                 'Nombre de tables',
                 color='#4ECDC4',
-                height=250
+                height=350
             )
             st.altair_chart(chart, use_container_width=True)
         
@@ -480,7 +480,7 @@ try:
                 'Capacité',
                 'Capacité totale',
                 color='#FFD93D',
-                height=250
+                height=350
             )
             st.altair_chart(chart, use_container_width=True)
     

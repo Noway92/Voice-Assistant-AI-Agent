@@ -62,7 +62,7 @@ class EmbeddingsManager:
                 headers=headers
             )
 
-            print(f"Credentials configured: {chroma_user}")
+            print(f"Credentials configured: ")
             print("Connected to ChromaDB successfully")
         except Exception as e:
             raise ConnectionError(f"Failed to connect to ChromaDB at {chroma_host}:{chroma_port}. Is the server running? Error: {e}")

@@ -70,7 +70,7 @@ class TextToSpeech:
         
     def speak_offline(self, text):
         """Use pyttsx3 for offline TTS."""
-        print(f"[TTS Offline] Speaking: {text}\n\n")
+        print(f"[TTS Offline] Speaking ...")
         engine = pyttsx3.init()
         engine.setProperty("rate", 170)
         engine.say(text)
@@ -79,7 +79,7 @@ class TextToSpeech:
     
     def speak_custom_xtts(self, text, language='en', output_path="static/audioGenerated/output_xtts.wav"):
         """Use custom trained XTTS model for TTS with optimal parameters."""
-        print(f"[Custom XTTS] Speaking in {language}: {text}")
+        print(f"[Custom XTTS] Speaking in {language} ...")
         
         try:
             # Clear GPU cache before generation (important for 6GB VRAM)
@@ -121,7 +121,7 @@ class TextToSpeech:
     
     def speak_online_computer(self, text, output_path="static/audioGenerated/output_tts_online_computer.mp3"):
         """Use OpenAI API to speak directly on computer."""
-        print(f"[TTS Online Computer] {self.voice} Speaking: {text}\n\n")
+        print(f"[TTS Online Computer] {self.voice} Speaking ...")
         response = self.client.audio.speech.create(
             model="tts-1",
             voice=self.voice,
@@ -147,7 +147,7 @@ class TextToSpeech:
     
     def speak_online_phone(self, text, output_path="static/audioGenerated/output_tts_online_phone.mp3"):
         """Use OpenAI API for online TTS."""
-        print(f"[TTS Online Phone] {self.voice} Speaking: {text}\n\n")
+        print(f"[TTS Online Phone] {self.voice} Speaking ...")
         response = self.client.audio.speech.create(
             model="tts-1",
             voice=self.voice,

@@ -1,7 +1,7 @@
 ======================================================================
 EVALUATION REPORT
 ======================================================================
-Generated: 2026-01-02T02:32:37.262537
+Generated: 2026-01-03T17:41:25.197099
 
 INTENT CLASSIFICATION
 ----------------------------------------------------------------------
@@ -16,28 +16,28 @@ Per-class metrics:
 
 AGENT PERFORMANCE
 ----------------------------------------------------------------------
-Reservation: 40% task success, 100% param extraction
+Reservation: 60% task success, 60% param extraction
 General: 95% success rate
-Order: 50% success rate
+Order: 100% success rate
 
 RAG RETRIEVAL
 ----------------------------------------------------------------------
-MRR: 0.9000
-Precision@3: 0.40
-Precision@5: 0.26
+MRR: 0.8000
+Precision@3: 0.47
+Precision@5: 0.36
 
 Ragas: Ragas not available. Install with: pip install ragas
 
 END-TO-END TASK COMPLETION
 ----------------------------------------------------------------------
-Success rate: 50.00%
+Success rate: 60.00%
 Avg turns to completion: 1.2
-Error recovery rate: 0.00%
+Error recovery rate: 33.33%
 
 RECOMMENDATIONS
 ----------------------------------------------------------------------
-1. Reservation agent task success rate is 40%. Review tool call logic and parameter extraction.
-2. RAG Precision@3 is 0.40. Review document chunking strategy or embedding model.
-3. End-to-end task success rate is 50%. Review conversation flow and error handling.
+1. Reservation agent task success rate is 60%. Review tool call logic and parameter extraction.
+2. RAG Precision@3 is 0.47. Review document chunking strategy or embedding model.
+3. End-to-end task success rate is 60%. Review conversation flow and error handling.
 
 ======================================================================

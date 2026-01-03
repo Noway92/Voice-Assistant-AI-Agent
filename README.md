@@ -20,9 +20,6 @@ Copy the adress in "Voice Configuration" → "A CALL COMES IN"
 
 ## IMPORTANT : POUR LANCER IL FAUT AVOIR OLLAMA OUVERT
 
+## If you change your menu 
 
-## Reste à Faire : 
-
-- Peaufiner les prompts des différents agents
-- Faire le streamlit
-
+run src/rag again and update the database

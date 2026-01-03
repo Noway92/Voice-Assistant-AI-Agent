@@ -55,12 +55,12 @@ class PhoneMain:
             
             if saved_lang:
                 # Reuse the saved language
-                print(f"\n\nUtilisateur ({saved_lang}): {user_text}")
+                print(f"\nUtilisateur ({saved_lang}): {user_text}")
                 detected_lang = saved_lang
             else:
                 # First time: detect the language
                 _, detected_lang = self.language_processor.process_input(user_text)
-                print(f"\n\nUtilisateur ({detected_lang}) [DÉTECTÉ]: {user_text}")
+                print(f"\nUtilisateur ({detected_lang}) [DÉTECTÉ]: {user_text}")
                 
                 # Sauvegarder pour les prochains messages
                 if call_sid not in self.active_calls:
@@ -131,7 +131,7 @@ class PhoneMain:
                 detected_lang
             )
             
-            print(f"Agent ({detected_lang}): {agent_response}")
+            print(f"\nAgent ({detected_lang}): {agent_response}\n")
             
             # Generate MP3 file
             audio_filename = f"response_output_tts_online_phone_{call_sid}_{uuid.uuid4().hex[:8]}.mp3"

@@ -205,8 +205,10 @@ def generate_static_audio():
     """Generate standard audio messages on startup."""
     audio_dir = 'static/audioAutomatic'
     generated_dir = 'static/audioGenerated'
+    listened_dir = 'static/audioListened'
     os.makedirs(audio_dir, exist_ok=True)
     os.makedirs(generated_dir, exist_ok=True)
+    os.makedirs(listened_dir, exist_ok=True)
     
     print("Génération des fichiers audio standards...")
     tts = TextToSpeech(isOffline=False,UsePhone=True,use_custom_xtts=False)

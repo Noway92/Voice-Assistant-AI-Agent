@@ -1,5 +1,6 @@
 import sys
 import time
+import os
 from pathlib import Path
 from typing import List, Dict
 
@@ -21,6 +22,13 @@ class VoiceAssistant:
         self.language_processor = LanguageProcessor()
         self.orchestrator = Orchestrator(isOffline=isOffline)
         self.current_language = 'en'
+
+        audio_dir = 'static/audioAutomatic'
+        generated_dir = 'static/audioGenerated'
+        listened_dir = 'static/audioListened'
+        os.makedirs(audio_dir, exist_ok=True)
+        os.makedirs(generated_dir, exist_ok=True)
+        os.makedirs(listened_dir, exist_ok=True)
 
         #Historique des conversations
         self.conversation_history: List[Dict[str, str]] = []
@@ -70,7 +78,6 @@ class VoiceAssistant:
     
     def speak(self, text: str, language: str = None):
         """Convert text to speech."""
-        print("[Speaking] ...")
         lang = language if language else self.current_language
         self.tts.speak(text, language=lang)
     
@@ -81,8 +88,8 @@ class VoiceAssistant:
         print("Say 'exit' or 'quit' to stop")
         print("="*60 + "\n")
         
-        stop = 0
-        while True and stop==0:
+        stop = True
+        while True and stop:
             try:
                 # Step 1: Listen to user
                 user_input = self.listen()
@@ -103,17 +110,16 @@ class VoiceAssistant:
                 self.speak(response, language=language)
                 
                 print("\n" + "-"*60 + "\n")
-                #stop = 1
                 
             except KeyboardInterrupt:
                 print("\n[Interrupted] Shutting down...")
                 self.speak("Goodbye!")
-                stop = 1
+                stop = False
                 break
             except Exception as e:
                 print(f"[Error] {str(e)}")
                 self.speak("Sorry, I encountered an error. Please try again.")
-                stop = 1
+                stop = False
 
 def main():
     """Main entry point."""
