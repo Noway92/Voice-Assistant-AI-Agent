@@ -81,65 +81,129 @@ class Orchestrator:
     def _build_context(self, current_input: str, history: List[Dict]) -> str:
         """
         Build enriched context by combining conversation history with current input.
-        
+
         Args:
             current_input: The current user's question or request
             history: List of previous conversation messages with 'role' and 'content' keys
-            
+
         Returns:
             A formatted string containing recent conversation context and current request.
             If no history exists, returns the current input unchanged.
         """
         if not history or len(history) == 0:
             return current_input
-        
+
         # Take last 5 exchanges (10 messages) for context
         recent_history = history[-10:] if len(history) > 10 else history
-        
+
         context_parts = ["Previous conversation context:"]
         for msg in recent_history:
             role = "Customer" if msg["role"] == "user" else "Assistant"
             context_parts.append(f"{role}: {msg['content']}")
-        
+
         context_parts.append(f"\nCurrent customer request: {current_input}")
-        
+
         return "\n".join(context_parts)
+
+    def _is_error_response(self, response: str) -> bool:
+        """
+        Detect if a response indicates an error or failure.
+
+        Args:
+            response: The agent's response string
+
+        Returns:
+            True if the response indicates an error, False otherwise
+        """
+        if not response:
+            return True
+
+        response_lower = response.lower()
+        error_indicators = [
+            "error", "apologize", "sorry", "couldn't", "could not",
+            "failed", "unable", "can't", "cannot", "problem",
+            "erreur", "désolé", "impossible", "n'ai pas pu"
+        ]
+
+        return any(indicator in response_lower for indicator in error_indicators)
+
+    def _rephrase_for_retry(self, user_input: str, attempt: int) -> str:
+        """
+        Rephrase the input for retry attempt.
+
+        Args:
+            user_input: Original user input
+            attempt: Retry attempt number (1 or 2)
+
+        Returns:
+            Rephrased input
+        """
+        if attempt == 1:
+            return f"Please help with this request: {user_input}"
+        else:
+            return f"Let me try again - {user_input}"
     
     def process_request(self, user_input: str, conversation_history: Optional[List[Dict]] = []) -> str:
         """
-        Process user request by routing to the appropriate sub-agent.
-        
+        Process user request by routing to the appropriate sub-agent with retry logic.
+
         Args:
             user_input: The user's question or request
-            conversation_history: Optional conversation history for context 
-            
+            conversation_history: Optional conversation history for context
+
         Returns:
             The response from the appropriate sub-agent
         """
-        try:
-            # Step 1: Build context with history
-            if len(conversation_history) != 0:
-                user_input = self._build_context(user_input, conversation_history)
-                print(f"[Orchestrator] Use context for answering")
+        max_retries = 2
+        original_input = user_input
 
-            # Step 2: Classify the intent (using context if available)
-            intent = self._classify_intent(user_input)
-            print(f"[Orchestrator] Classified intent: {intent}")
-            
-            # Step 3: Route to the appropriate sub-agent with context
-            if intent == "general":
-                response = self.general_agent.process(user_input)
-            elif intent == "order":
-                response = self.order_agent.process(user_input)
-            elif intent == "reservation":
-                response = self.reservation_agent.process(user_input)
-            else:
-                response = "I am sorry, I didn't understand your question"
-            
-            return response
-            
-        except Exception as e:
-            return f"I apologize, but I encountered an error: {str(e)}"
+        for attempt in range(max_retries + 1):
+            try:
+                # Step 1: Build context with history (only on first attempt)
+                current_input = original_input
+                if attempt == 0 and len(conversation_history) != 0:
+                    current_input = self._build_context(original_input, conversation_history)
+                    print(f"[Orchestrator] Use context for answering")
+                elif attempt > 0:
+                    # On retry, use simpler rephrased version
+                    current_input = self._rephrase_for_retry(original_input, attempt)
+                    print(f"[Orchestrator] Retry attempt {attempt}")
+
+                # Step 2: Classify the intent (using context if available)
+                intent = self._classify_intent(current_input)
+                print(f"[Orchestrator] Classified intent: {intent}")
+
+                # Step 3: Route to the appropriate sub-agent with context
+                response = None
+                if intent == "general":
+                    response = self.general_agent.process(current_input)
+                elif intent == "order":
+                    response = self.order_agent.process(current_input)
+                elif intent == "reservation":
+                    response = self.reservation_agent.process(current_input)
+                else:
+                    response = "I am sorry, I didn't understand your question"
+
+                # Step 4: Check if response indicates an error
+                if not self._is_error_response(response):
+                    # Success! Return the response
+                    return response
+                else:
+                    print(f"[Orchestrator] Error detected in response, attempt {attempt + 1}/{max_retries + 1}")
+                    # If this was the last attempt, return the error response
+                    if attempt == max_retries:
+                        return response
+                    # Otherwise, continue to next retry
+
+            except Exception as e:
+                print(f"[Orchestrator] Exception on attempt {attempt + 1}: {str(e)}")
+                # If this was the last attempt, return error
+                if attempt == max_retries:
+                    return f"I apologize, but I encountered an error: {str(e)}"
+                # Otherwise, continue to next retry
+
+        # Fallback (should not reach here)
+        return "I apologize, but I was unable to process your request after multiple attempts."
 
 
 def orchestrator(user_input: str) -> str:

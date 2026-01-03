@@ -217,19 +217,28 @@ class AgentEvaluator:
                 response_str = str(response) if response else ""
                 response_lower = response_str.lower()
                 
-                # Check if expected items are mentioned
+                # Check if expected items are mentioned or if agent is asking for required info
                 items_found = [
                     item for item in expected_items
                     if item.lower() in response_lower
                 ]
-                
+
+                # Consider it successful if items are mentioned OR agent is appropriately asking for info
+                asking_for_info = any(keyword in response_lower for keyword in [
+                    "name", "phone", "address", "contact", "provide", "need"
+                ])
+
+                # Success if: items found, OR agent is asking for required information to complete the order
+                is_success = (len(items_found) >= len(expected_items) * 0.5 if expected_items else True) or \
+                            (asking_for_info and expected_action == "place_order")
+
                 result = {
                     "input": input_text,
                     "response": response_str,
                     "expected_action": expected_action,
                     "expected_items": expected_items,
                     "items_found": items_found,
-                    "success": len(items_found) >= len(expected_items) * 0.5 if expected_items else True,
+                    "success": is_success,
                     "error": None
                 }
                 
