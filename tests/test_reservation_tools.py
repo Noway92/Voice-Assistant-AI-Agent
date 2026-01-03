@@ -5,9 +5,10 @@ This script demonstrates all the functionality of the reservation system.
 
 import sys
 import os
+from pathlib import Path
 
 # Add parent directory to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from agents.tools.reservation_tools import ReservationToolsSQL
 
