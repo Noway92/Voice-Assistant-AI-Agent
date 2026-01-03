@@ -1,5 +1,6 @@
 # Environnements virtuels locaux
 python_env_voice_assistant/
+streamlit_env/
 
 # Python
 __pycache__/
