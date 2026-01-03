@@ -250,6 +250,38 @@
       }
     }
   ],
+  "test_cases": [
+    {
+      "input": "I'd like to book a table for 4 people tomorrow at 7pm. My name is John Smith and my phone is 0612345678",
+      "expected_action": "make_reservation",
+      "expected_params": {"guests": 4, "name": "John Smith"},
+      "expected_success": true
+    },
+    {
+      "input": "Book a table for 2 at 8pm tomorrow",
+      "expected_action": "make_reservation",
+      "expected_params": {"guests": 2},
+      "expected_success": true
+    },
+    {
+      "input": "Do you have tables available for 6 people this Saturday at 8pm?",
+      "expected_action": "check_availability",
+      "expected_params": {"guests": 6},
+      "expected_success": true
+    },
+    {
+      "input": "I need to cancel my reservation for tomorrow at 7pm, my name is Pierre Dupont",
+      "expected_action": "cancel_reservation",
+      "expected_params": {"name": "Pierre Dupont"},
+      "expected_success": true
+    },
+    {
+      "input": "We're a group of 12 people, can we reserve for Friday at 8pm?",
+      "expected_action": "make_reservation",
+      "expected_params": {"guests": 12},
+      "expected_success": true
+    }
+  ],
   "context_retention_scenarios": [
     {
       "name": "remember_party_size",

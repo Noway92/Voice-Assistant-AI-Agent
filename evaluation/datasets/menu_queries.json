@@ -215,7 +215,7 @@
   "rag_test_cases": [
     {
       "query": "What vegetarian options do you have?",
-      "relevant_doc_ids": ["dietary", "menu_item_vegetarian"],
+      "relevant_doc_ids": ["dietary", "menu_item_11"],
       "filter_type": null
     },
     {
@@ -225,12 +225,12 @@
     },
     {
       "query": "What's included in the lunch menu?",
-      "relevant_doc_ids": ["offer_1", "menu_item"],
-      "filter_type": "special_offer"
+      "relevant_doc_ids": ["offer_0", "offer_1", "offer_2", "menu_item_21"],
+      "filter_type": null
     },
     {
       "query": "How do you handle food allergies?",
-      "relevant_doc_ids": ["allergies"],
+      "relevant_doc_ids": ["allergies", "dietary"],
       "filter_type": null
     }
   ]

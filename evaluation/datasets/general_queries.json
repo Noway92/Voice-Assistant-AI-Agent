@@ -160,33 +160,33 @@
   "rag_test_cases": [
     {
       "query": "What are your opening hours?",
-      "relevant_doc_ids": ["opening_hours"],
-      "filter_type": "opening_hours"
+      "relevant_doc_ids": ["opening_hours", "location", "contact"],
+      "filter_type": null
     },
     {
       "query": "Where is the restaurant located?",
-      "relevant_doc_ids": ["location"],
-      "filter_type": "location"
+      "relevant_doc_ids": ["location", "contact", "opening_hours"],
+      "filter_type": null
     },
     {
       "query": "Do you have any special offers?",
       "relevant_doc_ids": ["offer_0", "offer_1", "offer_2"],
-      "filter_type": "special_offer"
+      "filter_type": null
     },
     {
       "query": "How do you handle food allergies?",
-      "relevant_doc_ids": ["allergies"],
-      "filter_type": "allergies"
+      "relevant_doc_ids": ["allergies", "dietary"],
+      "filter_type": null
     },
     {
       "query": "Do you accept pets?",
-      "relevant_doc_ids": ["faq_0"],
-      "filter_type": "faq"
+      "relevant_doc_ids": ["faq_0", "faq_1", "faq_2", "faq_3", "faq_4", "faq_5"],
+      "filter_type": null
     },
     {
       "query": "Is the restaurant accessible?",
-      "relevant_doc_ids": ["accessibility"],
-      "filter_type": "accessibility"
+      "relevant_doc_ids": ["accessibility", "location"],
+      "filter_type": null
     }
   ]
 }

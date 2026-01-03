@@ -121,7 +121,7 @@ class EvaluationRunner:
             reservation_dataset = self._load_test_dataset("reservation_scenarios.json")
             reservation_results = self.agent_evaluator.evaluate_reservation_agent(
                 agents["reservation"],
-                reservation_dataset.get("scenarios", [])[:5]  # Limit for speed
+                reservation_dataset.get("test_cases", [])  # Use test_cases, not scenarios
             )
             agent_results["reservation"] = reservation_results
         
