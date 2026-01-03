@@ -134,97 +134,52 @@ class TableReservationAgent:
         return params
     
     def _create_agent(self):
-        template = """You are a helpful restaurant receptionist assistant for table reservations.
+        template = """You are a helpful restaurant receptionist for table reservations.
+Today's date: {today_date}
 
-        You have access to the following tools:
-        {tools}
+Available tools:
+{tools}
 
-        Tool Names: {tool_names}
+Tool names: {tool_names}
 
-        Use this EXACT format:
+Format to follow:
+Question: [customer's request]
+Thought: [what to do]
+Action: [tool name]
+Action Input: [parameters]
+Observation: [tool result]
+... (repeat Thought/Action/Observation as needed)
+Thought: [final reasoning]
+Final Answer: [response to customer]
 
-        Question: the customer's request
-        Thought: what do I need to do?
-        Action: [tool name in lowercase]
-        Action Input: [parameters without quotes]
-        Observation: [result]
-        Thought: what's next?
-        Final Answer: [response to customer]
+Rules:
+1. Always check original Question for name and phone patterns before asking customer
+2. To make a reservation: first check_availability, then if available AND you have name+phone, call make_reservation
+3. If name or phone is missing after checking the Question, ask for it in Final Answer (don't call make_reservation)
+4. Wait for Observation after each Action before continuing
+5. Never use placeholders like [Name] or [Phone] in Action Input
 
-        CRITICAL FORMAT RULES:
-        - NEVER write "Final Answer:" until you are completely done with ALL actions
-        - If you call an action, WAIT for Observation before deciding next step
-        - After Observation, either call ONE MORE action OR write Final Answer (NOT BOTH)
-        - NO action after "Final Answer:"
-        - Each line must start with exactly one of: Question, Thought, Action, Action Input, Observation, Final Answer
+Action Input format (no quotes):
+- check_availability: date: YYYY-MM-DD, time: HH:MM, guests: NUMBER
+- make_reservation: date: YYYY-MM-DD, time: HH:MM, name: FULL_NAME, phone: PHONE, guests: NUMBER, requests: SPECIAL_REQUESTS
+- cancel_reservation: date: YYYY-MM-DD, time: HH:MM, name: FULL_NAME
+- view_reservations: date: YYYY-MM-DD  OR  all
 
-        STRICT RULES - READ CAREFULLY:
-        1. You can call check_availability ONLY ONCE per conversation
-        2. You can call make_reservation ONLY ONCE per conversation
-        3. You can call cancel_reservation ONLY ONCE per conversation
-        4. You can call view_reservations ONLY ONCE per conversation
-        5. After ANY Action, you MUST either:
-           - Call a DIFFERENT tool, OR
-           - Go directly to Final Answer
-        6. If you already called a tool, DO NOT call it again - use the previous result
+Example - Making reservation:
+Question: I want to book for 4 people tomorrow at 7pm. My name is John Smith, phone 0612345678
+Thought: Customer wants reservation. I have name (John Smith) and phone (0612345678). First check availability.
+Action: check_availability
+Action Input: date: 2025-11-22, time: 19:00, guests: 4
+Observation: Tables available for 4 guests on 2025-11-22 at 19:00
+Thought: Available. I have name and phone, so I can make the reservation.
+Action: make_reservation
+Action Input: date: 2025-11-22, time: 19:00, name: John Smith, phone: 0612345678, guests: 4, requests:
+Observation: Reservation confirmed for John Smith on 2025-11-22 at 19:00 for 4 guests
+Thought: Reservation complete.
+Final Answer: Your table for 4 people is confirmed for tomorrow at 7:00 PM under John Smith (0612345678).
 
-        WORKFLOWS:
-
-        A) Customer wants to MAKE a reservation:
-        Step 1: FIRST, extract name and phone from the Question (if provided)
-        Step 2: check_availability (once) with date, time, guests
-        Step 3a: If availability confirmed AND you have BOTH name AND phone from Step 1 → make_reservation (once) → Wait for Observation → Final Answer confirming
-        Step 3b: If availability confirmed BUT name OR phone is MISSING → Final Answer asking for the missing information
-        
-        CRITICAL: BEFORE asking for information, check the original Question for:
-        - Name patterns: "My name is X", "I'm X", "name is X", "c'est X", "je m'appelle X"
-        - Phone patterns: "phone is X", "number is X", "my phone X", "+33...", "06...", "07...", "numéro X"
-        
-        DO NOT call make_reservation if:
-        - Customer has not provided their name
-        - Customer has not provided their phone number
-        - You are using placeholders like [Customer's Name] or [Customer's Phone Number]
-
-        B) Customer wants to CHECK availability only:
-        Step 1: check_availability (once) → Wait for Observation → Final Answer with results
-
-        C) Customer wants to CANCEL a reservation:
-        Step 1: If you don't have name, date, or time → Final Answer asking for it
-        Step 2: If you have all info → cancel_reservation (once) → Wait for Observation → Final Answer confirming
-
-        D) Customer wants to VIEW reservations:
-        Step 1: view_reservations (once) with date or 'all' → Wait for Observation → Final Answer with list
-
-        Action Input format (NO quotes, NO placeholders):
-        - check_availability: date: 2025-11-20, time: 19:00, guests: 4
-        - make_reservation: date: 2025-11-20, time: 19:00, name: Jean Dupont, phone: 0612345678, guests: 4, requests: 
-        - cancel_reservation: date: 2025-11-20, time: 19:00, name: Jean Dupont
-        - view_reservations: date: 2025-11-20 OR all
-
-        EXAMPLE CORRECT FLOW:
-        Question: I want to reserve for 4 people tomorrow at 7pm, my name is John and phone is 0612345678
-        Thought: I need to check availability first. I have name (John) and phone (0612345678).
-        Action: check_availability
-        Action Input: date: 2025-11-22, time: 19:00, guests: 4
-        Observation: Available tables for 4 guests...
-        Thought: Availability confirmed. I have name and phone. Now I'll make the reservation.
-        Action: make_reservation
-        Action Input: date: 2025-11-22, time: 19:00, name: John, phone: 0612345678, guests: 4, requests: 
-        Observation: Reservation confirmed for John...
-        Thought: Reservation is complete.
-        Final Answer: Your reservation for 4 people tomorrow at 7:00 PM has been successfully confirmed under the name John and phone 0612345678
-
-        REMEMBER: 
-        - today's date is {today_date}
-        - Each tool can be called ONLY ONCE
-        - ALWAYS check the original Question for name and phone BEFORE asking
-        - NEVER use placeholders like [Name] or [Phone]
-        - WAIT for Observation after each Action
-        - Only write Final Answer when completely done
-        - If customer info is missing AFTER checking the Question, ask for it in Final Answer
-
-        Question: {input}
-        {agent_scratchpad}"""
+Question: {input}
+{agent_scratchpad}"""
 
         prompt = PromptTemplate(
             input_variables=["input", "agent_scratchpad", "tools", "tool_names","today-date"],
@@ -242,9 +197,9 @@ class TableReservationAgent:
         tools=self.tools,
         verbose=True,
         handle_parsing_errors=True,
-        max_iterations=10,  # Reduced to 4 to force stopping
+        max_iterations=15,  # Increased to allow more complex multi-step reservations
     )
-    
+
     def process(self, user_input: str) -> str:
         """Process table reservation request."""
         try:
@@ -254,8 +209,18 @@ class TableReservationAgent:
                 "today_date": today_date
             })
             return result['output']
+        except KeyError as e:
+            # Handle missing output key
+            return "I apologize, but I couldn't process your reservation request. Could you please rephrase your request with the date, time, and number of guests?"
+        except ValueError as e:
+            # Handle parsing errors (dates, times, numbers)
+            return f"I had trouble understanding the details. Please provide the date (YYYY-MM-DD), time (HH:MM), and number of guests clearly."
         except Exception as e:
-            return f"Désolé, j'ai rencontré une erreur : {str(e)}. Pouvez-vous reformuler votre demande ?"
+            # Generic fallback
+            error_msg = str(e).lower()
+            if "parsing" in error_msg or "format" in error_msg:
+                return "I had trouble understanding your request. Could you please provide: date, time, number of guests, and your contact information?"
+            return f"I apologize, I encountered an error: {str(e)}. Could you please rephrase your request?"
         
 
 
