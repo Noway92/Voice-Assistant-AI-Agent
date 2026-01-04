@@ -91,21 +91,6 @@ Stores individual items within each order.
 
 ## Configuration
 
-### Environment Variables (.env)
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-# PostgreSQL Configuration
-DB_HOST=mlangelier.com
-DB_USER=admin
-DB_PASSWORD=nwy03kkAledAppKC
-DB_PORT=5432
-DB_NAME=llm_agent_db
-```
-
-Alternatively, update `src/database/db_config.py` with your database credentials.
-
 ## Database Initialization
 
 ### 1. Initialize the Database

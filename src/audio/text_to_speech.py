@@ -30,9 +30,9 @@ class TextToSpeech:
                 self.xtts_reference_wav = os.path.join(script_dir, "tts", "reference.wav")
                 
                 # Load config and model
-                #self.xtts_config = XttsConfig()
+                self.xtts_config = XttsConfig()
                 self.xtts_config.load_json(self.xtts_config_path)
-                #self.xtts_model = Xtts.init_from_config(self.xtts_config)
+                self.xtts_model = Xtts.init_from_config(self.xtts_config)
                 
                 # Get the directory containing the model files
                 checkpoint_dir = os.path.dirname(self.xtts_model_path)
@@ -61,12 +61,13 @@ class TextToSpeech:
                 print(f"[XTTS] Failed to load custom model: {str(e)}")
                 print("[XTTS] Falling back to offline TTS (pyttsx3)")
                 self.use_custom_xtts = False  # Disable custom XTTS on failure
+        
+        # Initialize engine/client based on isOffline (independent of XTTS)
+        if isOffline:
+            self.engine = pyttsx3.init()
+            self.engine.setProperty("rate", 170)
         else:
-            if isOffline:
-                self.engine = pyttsx3.init()
-                self.engine.setProperty("rate", 170)
-            else:
-                self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))
+            self.client = OpenAI(api_key=os.environ.get("API_KEY_OPENAI"))
         
     def speak_offline(self, text):
         """Use pyttsx3 for offline TTS."""
@@ -174,5 +175,3 @@ class TextToSpeech:
                     self.speak_offline(text)
                 else :
                     self.speak_online_computer(text)
-            
-        
