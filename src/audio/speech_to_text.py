@@ -27,22 +27,20 @@ class SpeechToText:
         
         def record():
             """Thread d'enregistrement continu."""
-            chunk_duration = 0.5  # chunks de 500ms
-            chunk_samples = int(chunk_duration * self.samplerate)
-            
-            while not stop_recording.is_set():
-                chunk = sd.rec(chunk_samples, 
-                            samplerate=self.samplerate, 
+            with sd.InputStream(samplerate=self.samplerate, 
                             channels=1, 
-                            blocking=False)
-                sd.wait()
-                audio_chunks.append(chunk)
+                            dtype='float32') as stream:
+                while not stop_recording.is_set():
+                    chunk, overflowed = stream.read(int(self.samplerate * 0.1))
+                    if overflowed:
+                        print("Warning: Audio buffer overflow detected")
+                    audio_chunks.append(chunk)
         
         # Start recording
         record_thread = threading.Thread(target=record, daemon=True)
         record_thread.start()
         
-        # Wait for input
+        # Wait for Enter key
         input()
         stop_recording.set()
         record_thread.join()
@@ -53,7 +51,6 @@ class SpeechToText:
             audio_int16 = (audio.flatten() * 32767).astype(np.int16)
             sf.write(filename, audio_int16, self.samplerate, format='mp3')
             print(f"Audio sauvegardé sous : {filename}")
-
             return filename
 
     
