@@ -182,14 +182,25 @@ pip install TTS
 
 Once you install TTS you can uncomment lines 8 and 9 of text_to_speech.py
 
-### 2. TTS Model Files
+### 2. Custom TTS Model Files
 
-The TTS directory contains the following files for the custom voice model:
+The TTS model files are not included in this repository due to size constraints.
+
+Create the following directory:
+src/audio/tts/
+
+Download all required model files from:
+https://huggingface.co/VianLB/coqui_tts_fine-tuned
+
+Place the downloaded files (best_model.pth, config.json, dvae.pth, mel_stats.pth, vocab.json) into the src/audio/tts/ directory before running the project.
+
 - **best_model.pth** - The trained TTS model weights for voice synthesis
 - **config.json** - Configuration file containing model parameters and settings
 - **dvae.pth** - Discrete Variational Autoencoder model for audio encoding
 - **mel_stats.pth** - Mel-spectrogram statistics for audio normalization
 - **vocab.json** - Vocabulary mapping for text-to-phoneme conversion
+
+Look at Custom_TTS_Model_Training_Report.pdf for more information about the training.
 
 ### 3. Enable Custom TTS
 
@@ -253,7 +264,9 @@ Voice-Assistant-AI-Agent/
 ├── tests/                   # Unit tests
 ├── run_computer.py          # Computer mode entry point
 ├── run_phone.py            # Phone mode entry point
-└── requirements.txt
+├── requirements.txt
+├── Custom_TTS_Model_Training_Report.pdf
+└── Restaurant_Voice_Assistant.pdf
 ```
 
 ## Key Components
